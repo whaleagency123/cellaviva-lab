@@ -25,8 +25,7 @@ export async function POST(req: NextRequest) {
   if (file.size > MAX_BYTES) return NextResponse.json({ error: 'File too large' }, { status: 400 })
 
   const buffer     = Buffer.from(await file.arrayBuffer())
-  const uploadDir  = join(process.cwd(), 'public', 'uploads')
-  await mkdir(uploadDir, { recursive: true })
+  const filename   = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}${ext}`
 
   // ── Auto-compress images with Sharp ─────────────────────────────────────────
   let finalBuffer: Buffer = buffer
@@ -37,11 +36,10 @@ export async function POST(req: NextRequest) {
     try {
       const sharp = (await import('sharp')).default
       const compressed = await sharp(buffer)
-        .resize({ width: 2400, withoutEnlargement: true })  // max 2400px wide
-        .webp({ quality: 82 })                               // convert to WebP
+        .resize({ width: 2400, withoutEnlargement: true })
+        .webp({ quality: 82 })
         .toBuffer()
 
-      // Only use compressed if smaller
       if (compressed.length < buffer.length) {
         finalBuffer = Buffer.from(compressed)
         finalExt    = '.webp'
@@ -53,11 +51,31 @@ export async function POST(req: NextRequest) {
     }
   }
 
-  const filename = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}${finalExt}`
-  await writeFile(join(uploadDir, filename), finalBuffer)
+  const finalFilename = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}${finalExt}`
+
+  // ── Vercel Blob (production) or local filesystem (dev) ───────────────────────
+  let url: string
+
+  if (process.env.BLOB_READ_WRITE_TOKEN) {
+    // Production: upload to Vercel Blob (persistent cloud storage)
+    const { put } = await import('@vercel/blob')
+    const blob = await put(`uploads/${finalFilename}`, finalBuffer, {
+      access: 'public',
+      contentType: finalExt === '.webp' ? 'image/webp'
+                 : finalExt === '.mp4'  ? 'video/mp4'
+                 : 'application/octet-stream',
+    })
+    url = blob.url
+  } else {
+    // Development: save to public/uploads/
+    const uploadDir = join(process.cwd(), 'public', 'uploads')
+    await mkdir(uploadDir, { recursive: true })
+    await writeFile(join(uploadDir, finalFilename), finalBuffer)
+    url = `/uploads/${finalFilename}`
+  }
 
   return NextResponse.json({
-    url:              `/uploads/${filename}`,
+    url,
     originalSizeKB:   Math.round(buffer.length / 1024),
     compressedSizeKB: Math.round(finalSize / 1024),
     format:           finalExt.slice(1),

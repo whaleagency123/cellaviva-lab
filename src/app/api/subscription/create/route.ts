@@ -25,7 +25,7 @@ export async function POST(req: NextRequest) {
     }
 
     const stripe   = getStripe()
-    const BASE_URL = process.env.NEXTAUTH_URL ?? 'http://localhost:3002'
+    const BASE_URL = process.env.NEXTAUTH_URL ?? 'https://cellavivalab.com'
 
     // Find or create Stripe customer if user is logged in
     let stripeCustomerId: string | undefined

@@ -35,7 +35,7 @@ export async function POST(req: NextRequest) {
       update: { code: 'RESET', email: normalised, username: customer.name ?? normalised, expiresAt },
     })
 
-    const baseUrl  = process.env.NEXTAUTH_URL ?? process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3002'
+    const baseUrl  = process.env.NEXTAUTH_URL ?? process.env.NEXT_PUBLIC_APP_URL ?? 'https://cellavivalab.com'
     const resetUrl = `${baseUrl}/reset-password?token=${token}`
     await sendCustomerPasswordResetEmail(normalised, resetUrl)
 

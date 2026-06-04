@@ -8,7 +8,7 @@ export async function POST(req: NextRequest) {
   const session = await getServerSession(authOptions)
   if (!session?.user?.email) return NextResponse.json({ error: 'Not authenticated' }, { status: 401 })
 
-  const BASE_URL = process.env.NEXTAUTH_URL ?? 'http://localhost:3002'
+  const BASE_URL = process.env.NEXTAUTH_URL ?? 'https://cellavivalab.com'
   const { returnUrl } = await req.json().catch(() => ({}))
 
   const customer = await prisma.customer.findUnique({ where: { email: session.user.email } })

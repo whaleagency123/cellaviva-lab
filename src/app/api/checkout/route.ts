@@ -17,7 +17,7 @@ export async function POST(req: NextRequest) {
     const body = await req.json()
     const data = schema.parse(body)
 
-    const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3002'
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://cellavivalab.com'
 
     const session = await getStripe().checkout.sessions.create({
       mode: 'payment',

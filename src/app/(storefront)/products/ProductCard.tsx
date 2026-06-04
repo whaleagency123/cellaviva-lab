@@ -9,7 +9,7 @@ export function ProductCard({ product }: { product: Product }) {
   return (
     <div className="bg-white rounded-3xl overflow-hidden shadow-sm hover:shadow-lg transition-shadow border border-gray-100">
       {/* Image area */}
-      <div className="relative aspect-[4/3] bg-[#d8f3dc] flex items-center justify-center">
+      <div className="relative aspect-[4/3] bg-[#d8f3dc] flex items-center justify-center overflow-hidden">
         {product.featured && (
           <div className="absolute top-4 left-4 bg-[#52b788] text-white text-xs font-bold rounded-full px-3 py-1.5 z-10">
             Bestseller
@@ -21,10 +21,19 @@ export function ProductCard({ product }: { product: Product }) {
           </div>
         )}
         <WishlistButton slug={product.slug} className="absolute bottom-4 right-4 z-10" size="md" />
-        <div className="text-center">
-          <div className="text-9xl mb-3">🌿</div>
-          <p className="text-[#1b4332] font-bold">{product.title}</p>
-        </div>
+        {product.images && product.images.length > 0 ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={product.images[0]}
+            alt={product.title}
+            className="absolute inset-0 w-full h-full object-cover"
+          />
+        ) : (
+          <div className="text-center">
+            <div className="text-9xl mb-3">🌿</div>
+            <p className="text-[#1b4332] font-bold">{product.title}</p>
+          </div>
+        )}
       </div>
 
       {/* Content */}
