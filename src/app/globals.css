@@ -96,6 +96,11 @@
 [data-theme="dark"] input::placeholder,
 [data-theme="dark"] textarea::placeholder { color: #52796F !important; }
 
+/* Logo: invert to white in dark mode so it's visible on the dark header */
+[data-theme="dark"] .logo-img {
+  filter: brightness(0) invert(1);
+}
+
 /* ─── End dark mode ─────────────────────────────────────────────────── */
 
 * {

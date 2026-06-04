@@ -17,6 +17,7 @@ model Product {
   images      String[]
   featured    Boolean     @default(false)
   active      Boolean     @default(true)
+  comingSoon  Boolean     @default(false)
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
   orderItems    OrderItem[]

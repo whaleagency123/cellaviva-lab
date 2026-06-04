@@ -23,10 +23,16 @@ export default async function ProductsPage({
   const { q } = await searchParams
   const query = (q ?? '').toLowerCase().trim()
 
-  const dbProducts = await prisma.product.findMany({
-    where: { active: true },
-    orderBy: [{ featured: 'desc' }, { createdAt: 'asc' }],
-  }).catch(() => [])
+  const [dbProducts, comingSoonProducts] = await Promise.all([
+    prisma.product.findMany({
+      where: { active: true },
+      orderBy: [{ featured: 'desc' }, { createdAt: 'asc' }],
+    }).catch(() => []),
+    prisma.product.findMany({
+      where: { active: false, comingSoon: true },
+      orderBy: { createdAt: 'desc' },
+    }).catch(() => []),
+  ])
 
   const products = query
     ? dbProducts.filter(p =>
@@ -63,6 +69,65 @@ export default async function ProductsPage({
             <ProductCard key={product.id} product={product as any} />
           ))}
         </div>
+
+        {/* Coming Soon section */}
+        {comingSoonProducts.length > 0 && !query && (
+          <div className="mt-16">
+            <div className="flex items-center gap-4 mb-8">
+              <div className="flex-1 h-px bg-gray-200" />
+              <div className="text-center">
+                <span className="inline-block bg-amber-100 text-amber-700 text-xs font-bold uppercase tracking-widest px-4 py-2 rounded-full border border-amber-200">
+                  Coming Soon
+                </span>
+              </div>
+              <div className="flex-1 h-px bg-gray-200" />
+            </div>
+            <p className="text-center text-gray-500 text-sm mb-8 max-w-md mx-auto">
+              New additions to the CELLAVIVA routine are on the way. Stay tuned.
+            </p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              {comingSoonProducts.map(product => (
+                <div key={product.id} className="relative bg-white rounded-3xl border border-gray-100 overflow-hidden shadow-sm opacity-80 select-none">
+                  {/* Image / placeholder */}
+                  <div className="aspect-square bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center relative">
+                    {product.images?.[0] ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={product.images[0]} alt={product.title} className="w-full h-full object-cover grayscale-[60%]" />
+                    ) : (
+                      <span className="text-7xl">🌿</span>
+                    )}
+                    {/* Lock overlay */}
+                    <div className="absolute inset-0 bg-white/20 flex items-end justify-center pb-6">
+                      <span className="bg-white/90 backdrop-blur-sm text-gray-700 font-bold text-xs px-4 py-2 rounded-full shadow-sm">
+                        🔒 Not available yet
+                      </span>
+                    </div>
+                  </div>
+                  <div className="p-6">
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-amber-600 mb-1">Coming Soon</p>
+                    <h3 className="text-xl font-black text-gray-900 mb-2">{product.title}</h3>
+                    {product.description && (
+                      <p className="text-gray-500 text-sm line-clamp-2 mb-4">{product.description}</p>
+                    )}
+                    <div className="flex items-center gap-3">
+                      {product.salePrice && (
+                        <span className="text-2xl font-black text-gray-400">€{product.salePrice}</span>
+                      )}
+                      {product.price && (
+                        <span className={`font-semibold ${product.salePrice ? 'text-sm text-gray-400 line-through' : 'text-2xl font-black text-gray-400'}`}>
+                          €{product.price}
+                        </span>
+                      )}
+                    </div>
+                    <button disabled className="mt-4 w-full py-3 rounded-2xl bg-gray-100 text-gray-400 font-bold text-sm cursor-not-allowed">
+                      Notify Me When Available
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         <div className="mt-12 bg-[var(--sf-dark-bg)] rounded-3xl p-8 sm:p-10 text-white text-center">
           <p className="text-[var(--sf-accent-light)] font-semibold text-sm uppercase tracking-widest mb-3">Best Value</p>

@@ -12,6 +12,7 @@ async function isAdmin() {
 }
 
 const PAYMENT_KEYS = [
+  'paymentEnabled',
   'paymentCurrency',
   'paymentShippingThreshold',
   'paymentShippingFee',

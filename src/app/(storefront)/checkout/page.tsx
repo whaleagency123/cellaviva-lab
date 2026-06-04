@@ -156,13 +156,16 @@ export default function CheckoutPage() {
   const [loadingIntent, setLoadingIntent] = useState(false)
   const [intentError, setIntentError] = useState('')
 
-  // Payment enabled check
-  const [paymentEnabled, setPaymentEnabled] = useState(true)
+  // Card payment enabled check (WhatsApp / COD / Whish are unaffected)
+  const [cardEnabled, setCardEnabled] = useState(true)
   useEffect(() => {
     fetch('/api/admin/payments')
       .then(r => r.json())
       .then((d: Record<string, string>) => {
-        if (d.paymentEnabled === 'false') setPaymentEnabled(false)
+        if (d.paymentEnabled === 'false') {
+          setCardEnabled(false)
+          setPaymentMethod(m => m === 'card' ? 'cod' : m)
+        }
       })
       .catch(() => {})
   }, [])
@@ -384,25 +387,6 @@ export default function CheckoutPage() {
     )
   }
 
-  if (!paymentEnabled) {
-    return (
-      <div className="min-h-screen bg-[#f6f5f3] flex items-center justify-center px-4">
-        <div className="text-center max-w-sm">
-          <div className="w-20 h-20 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-6">
-            <CreditCard className="w-10 h-10 text-amber-500" />
-          </div>
-          <h2 className="text-2xl font-black text-gray-900 mb-3">Payments Temporarily Unavailable</h2>
-          <p className="text-gray-500 mb-6 leading-relaxed">
-            Our online payment system is currently undergoing maintenance. Please check back shortly or contact us directly.
-          </p>
-          <Link href="/contact" className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-[#2B5E3F] text-white font-semibold text-sm hover:bg-[#1B3E2A] transition-colors">
-            Contact Us
-          </Link>
-        </div>
-      </div>
-    )
-  }
-
   if (items.length === 0) {
     return (
       <div className="min-h-screen bg-[#f6f5f3] flex items-center justify-center px-4">
@@ -501,18 +485,20 @@ export default function CheckoutPage() {
                 <div className="bg-white rounded-3xl shadow-sm p-7">
                   <h2 className="text-xl font-black text-gray-900 mb-5">Payment Method</h2>
                   <div className="space-y-3">
-                    {/* Credit Card */}
-                    <label className={`flex items-center gap-4 p-4 rounded-2xl border-2 cursor-pointer transition-all ${paymentMethod === 'card' ? 'border-[#3a79a9] bg-blue-50' : 'border-gray-100 hover:border-gray-200'}`}>
-                      <input type="radio" name="paymentMethod" value="card" checked={paymentMethod === 'card'} onChange={() => setPaymentMethod('card')} className="sr-only" />
-                      <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0 ${paymentMethod === 'card' ? 'border-[#3a79a9] bg-[#3a79a9]' : 'border-gray-300'}`}>
-                        {paymentMethod === 'card' && <div className="w-2 h-2 rounded-full bg-white" />}
-                      </div>
-                      <CreditCard className="w-5 h-5 text-[#3a79a9] flex-shrink-0" />
-                      <div>
-                        <p className="font-bold text-gray-900 text-sm">Credit / Debit Card</p>
-                        <p className="text-xs text-gray-400">Visa, Mastercard, Amex — Secured by Stripe</p>
-                      </div>
-                    </label>
+                    {/* Credit Card — hidden when admin disables card payments */}
+                    {cardEnabled && (
+                      <label className={`flex items-center gap-4 p-4 rounded-2xl border-2 cursor-pointer transition-all ${paymentMethod === 'card' ? 'border-[#3a79a9] bg-blue-50' : 'border-gray-100 hover:border-gray-200'}`}>
+                        <input type="radio" name="paymentMethod" value="card" checked={paymentMethod === 'card'} onChange={() => setPaymentMethod('card')} className="sr-only" />
+                        <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0 ${paymentMethod === 'card' ? 'border-[#3a79a9] bg-[#3a79a9]' : 'border-gray-300'}`}>
+                          {paymentMethod === 'card' && <div className="w-2 h-2 rounded-full bg-white" />}
+                        </div>
+                        <CreditCard className="w-5 h-5 text-[#3a79a9] flex-shrink-0" />
+                        <div>
+                          <p className="font-bold text-gray-900 text-sm">Credit / Debit Card</p>
+                          <p className="text-xs text-gray-400">Visa, Mastercard, Amex — Secured by Stripe</p>
+                        </div>
+                      </label>
+                    )}
 
                     {/* Whish Money */}
                     <label className={`flex items-center gap-4 p-4 rounded-2xl border-2 cursor-pointer transition-all ${paymentMethod === 'whish' ? 'border-purple-500 bg-purple-50' : 'border-gray-100 hover:border-gray-200'}`}>

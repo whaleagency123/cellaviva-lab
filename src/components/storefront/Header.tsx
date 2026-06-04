@@ -56,7 +56,7 @@ export function Header({ navLinks = DEFAULT_SETTINGS.navLinks, sfIconCart = 'Sho
                 alt="CELLAVIVA"
                 width={62}
                 height={54}
-                className="transition-transform duration-200 group-hover:scale-105 dark:brightness-0 dark:invert"
+                className="logo-img transition-transform duration-200 group-hover:scale-105"
               />
             </Link>
 

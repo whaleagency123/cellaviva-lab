@@ -1,5 +1,5 @@
 'use client'
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import {
   Plus, Search, Edit2, Trash2, X,
   Globe, AlertTriangle, Star, Archive, Eye,
@@ -86,13 +86,39 @@ const EMPTY_PRODUCT: ProductFull = {
 const CARD = 'bg-[#13161f] border border-white/5 rounded-2xl'
 const INPUT = 'w-full bg-white/5 border border-white/10 rounded-xl px-3.5 py-2.5 text-sm text-white placeholder-white/25 focus:outline-none focus:border-[#4ade80] transition-colors'
 
+function dbToAdmin(p: any): ProductFull {
+  let status: ProductFull['status'] = 'ARCHIVED'
+  if (p.active) status = 'ACTIVE'
+  else if (p.comingSoon) status = 'DRAFT'
+  return {
+    id: p.id, slug: p.slug, title: p.title, description: p.description,
+    vendor: 'CELLAVIVA Labs', productType: '', tags: [],
+    status, featured: p.featured,
+    price: p.price, salePrice: p.salePrice ?? null, stock: p.stock,
+    sku: '', barcode: '', weight: 0, weightUnit: 'kg', trackInventory: true,
+    seoTitle: '', seoDescription: '', images: p.images ?? [],
+    variants: [], createdAt: p.createdAt, updatedAt: p.updatedAt,
+  }
+}
+
 export default function ProductsAdminPage() {
-  const [products, setProducts] = useState(MOCK_PRODUCTS)
+  const [products, setProducts] = useState<ProductFull[]>([])
+  const [loadingProducts, setLoadingProducts] = useState(true)
   const [search, setSearch] = useState('')
   const [statusFilter, setStatusFilter] = useState<string>('ALL')
   const [selected, setSelected] = useState<Set<string>>(new Set())
   const [uploadingImg, setUploadingImg] = useState(false)
   const fileRef = useRef<HTMLInputElement>(null)
+
+  useEffect(() => {
+    fetch('/api/admin/products')
+      .then(r => r.json())
+      .then((data: any[]) => {
+        if (Array.isArray(data)) setProducts(data.map(dbToAdmin))
+      })
+      .catch(() => {})
+      .finally(() => setLoadingProducts(false))
+  }, [])
 
   async function handleImageUpload(files: FileList | null) {
     if (!files || !editProduct) return
@@ -140,20 +166,66 @@ export default function ProductsAdminPage() {
   function openEdit(p: ProductFull) {
     setEditProduct({ ...p }); setIsNew(false); setActiveTab('general'); setTagInput('')
   }
-  function closeEditor() { setEditProduct(null); setIsNew(false) }
-  function saveProduct() {
+  const [saving, setSaving] = useState(false)
+  const [saveError, setSaveError] = useState('')
+
+  function closeEditor() { setEditProduct(null); setIsNew(false); setSaveError('') }
+
+  async function saveProduct() {
     if (!editProduct) return
-    const now = new Date().toISOString()
-    if (isNew) setProducts((prev) => [{ ...editProduct, createdAt: now, updatedAt: now }, ...prev])
-    else setProducts((prev) => prev.map((p) => p.id === editProduct.id ? { ...editProduct, updatedAt: now } : p))
-    closeEditor()
+    setSaving(true); setSaveError('')
+    const payload = {
+      title:       editProduct.title,
+      description: editProduct.description,
+      price:       editProduct.price,
+      salePrice:   editProduct.salePrice,
+      stock:       editProduct.stock,
+      images:      editProduct.images,
+      featured:    editProduct.featured,
+      status:      editProduct.status,
+      comingSoon:  editProduct.status === 'DRAFT',
+    }
+    try {
+      if (isNew) {
+        const res = await fetch('/api/admin/products', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        })
+        if (!res.ok) throw new Error((await res.json()).error ?? 'Failed to save')
+        const created = await res.json()
+        setProducts(prev => [dbToAdmin(created), ...prev])
+      } else {
+        const res = await fetch(`/api/admin/products/${editProduct.id}`, {
+          method: 'PATCH', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        })
+        if (!res.ok) throw new Error((await res.json()).error ?? 'Failed to save')
+        const updated = await res.json()
+        setProducts(prev => prev.map(p => p.id === editProduct.id ? dbToAdmin(updated) : p))
+      }
+      closeEditor()
+    } catch (err) {
+      setSaveError(err instanceof Error ? err.message : 'Something went wrong')
+    } finally {
+      setSaving(false)
+    }
   }
-  function deleteProduct(id: string) {
-    setProducts((prev) => prev.filter((p) => p.id !== id))
-    setSelected((prev) => { const n = new Set(prev); n.delete(id); return n })
+
+  async function deleteProduct(id: string) {
+    if (!confirm('Delete this product? This cannot be undone.')) return
+    await fetch(`/api/admin/products/${id}`, { method: 'DELETE' })
+    setProducts(prev => prev.filter(p => p.id !== id))
+    setSelected(prev => { const n = new Set(prev); n.delete(id); return n })
   }
-  function bulkArchive() {
-    setProducts((prev) => prev.map((p) => selected.has(p.id) ? { ...p, status: 'ARCHIVED' as const } : p))
+
+  async function bulkArchive() {
+    await Promise.all([...selected].map(id =>
+      fetch(`/api/admin/products/${id}`, {
+        method: 'PATCH', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: 'ARCHIVED' }),
+      })
+    ))
+    setProducts(prev => prev.map(p => selected.has(p.id) ? { ...p, status: 'ARCHIVED' as const } : p))
     setSelected(new Set())
   }
   function addTag(e: React.KeyboardEvent) {
@@ -292,7 +364,10 @@ export default function ProductsAdminPage() {
                 </tr>
               )
             })}
-            {filtered.length === 0 && (
+            {loadingProducts && (
+              <tr><td colSpan={9} className="px-5 py-16 text-center text-white/30"><Loader2 className="w-5 h-5 animate-spin mx-auto" /></td></tr>
+            )}
+            {!loadingProducts && filtered.length === 0 && (
               <tr><td colSpan={9} className="px-5 py-16 text-center text-white/30">No products match your filter.</td></tr>
             )}
           </tbody>
@@ -591,11 +666,13 @@ export default function ProductsAdminPage() {
             </div>
 
             {/* Drawer footer */}
-            <div className="px-6 py-4 border-t border-white/5 flex items-center justify-between">
+            <div className="px-6 py-4 border-t border-white/5 flex items-center justify-between gap-3">
+              {saveError && <p className="text-xs text-red-400 flex-1">{saveError}</p>}
               <button onClick={closeEditor} className="px-4 py-2.5 rounded-xl border border-white/10 text-sm font-semibold text-white/50 hover:bg-white/5 hover:text-white/70 transition-colors">
                 Discard
               </button>
-              <button onClick={saveProduct} className="px-5 py-2.5 rounded-xl bg-[#4ade80] hover:bg-[#22c55e] text-[#0b0d13] text-sm font-semibold transition-colors">
+              <button onClick={saveProduct} disabled={saving} className="px-5 py-2.5 rounded-xl bg-[#4ade80] hover:bg-[#22c55e] disabled:opacity-50 text-[#0b0d13] text-sm font-semibold transition-colors flex items-center gap-2">
+                {saving && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
                 {isNew ? 'Create product' : 'Save changes'}
               </button>
             </div>
