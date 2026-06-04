@@ -204,7 +204,7 @@ const TEMPLATES: Template[] = [
     html: `<section style="background:var(--sf-primary,#3a79a9);padding:80px 24px;text-align:center;">
   <div style="max-width:640px;margin:0 auto;">
     <h2 style="font-family:var(--sf-font-display,Georgia,serif);font-size:clamp(1.75rem,4vw,2.75rem);font-weight:700;color:#fff;margin-bottom:20px;">Ready to Transform Your Hair?</h2>
-    <p style="color:rgba(255,255,255,.75);font-size:1.05rem;line-height:1.7;margin-bottom:36px;">Join 12,000+ customers who've made Stemuvita™ part of their daily routine. Free shipping on orders €50+.</p>
+    <p style="color:rgba(255,255,255,.75);font-size:1.05rem;line-height:1.7;margin-bottom:36px;">Join 12,000+ customers who've made Stemuvita™ part of their daily routine. Free shipping on orders $50+.</p>
     <a href="/products" style="display:inline-block;background:#fff;color:var(--sf-primary,#3a79a9);padding:15px 44px;border-radius:999px;font-weight:800;font-size:15px;text-decoration:none;">Shop Now — Free Shipping</a>
   </div>
 </section>`,
@@ -278,7 +278,7 @@ const TEMPLATES: Template[] = [
     description: 'Four trust/shipping icons in a horizontal band — placed above or below sections.',
     html: `<section style="background:#fff;border-top:1px solid rgba(0,0,0,.07);border-bottom:1px solid rgba(0,0,0,.07);padding:28px 24px;">
   <div style="max-width:1000px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr);gap:24px;text-align:center;">
-    <div><p style="font-size:1.5rem;margin-bottom:8px;">🚚</p><p style="font-size:.8rem;font-weight:700;color:var(--sf-text,#222);">Free Shipping</p><p style="font-size:.75rem;color:#999;">On orders €50+</p></div>
+    <div><p style="font-size:1.5rem;margin-bottom:8px;">🚚</p><p style="font-size:.8rem;font-weight:700;color:var(--sf-text,#222);">Free Shipping</p><p style="font-size:.75rem;color:#999;">On orders $50+</p></div>
     <div><p style="font-size:1.5rem;margin-bottom:8px;">↩️</p><p style="font-size:.8rem;font-weight:700;color:var(--sf-text,#222);">30-Day Returns</p><p style="font-size:.75rem;color:#999;">No questions asked</p></div>
     <div><p style="font-size:1.5rem;margin-bottom:8px;">🔒</p><p style="font-size:.8rem;font-weight:700;color:var(--sf-text,#222);">Secure Checkout</p><p style="font-size:.75rem;color:#999;">SSL encrypted</p></div>
     <div><p style="font-size:1.5rem;margin-bottom:8px;">🌿</p><p style="font-size:.8rem;font-weight:700;color:var(--sf-text,#222);">100% Natural</p><p style="font-size:.75rem;color:#999;">No harsh chemicals</p></div>

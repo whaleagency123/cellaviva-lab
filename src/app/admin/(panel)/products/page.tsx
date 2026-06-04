@@ -341,11 +341,11 @@ export default function ProductsAdminPage() {
                   <td className="px-5 py-4">
                     {p.salePrice ? (
                       <div>
-                        <p className="font-bold text-[#4ade80]">€{p.salePrice}</p>
-                        <p className="text-xs text-white/30 line-through">€{p.price}</p>
+                        <p className="font-bold text-[#4ade80]">${p.salePrice}</p>
+                        <p className="text-xs text-white/30 line-through">${p.price}</p>
                       </div>
                     ) : (
-                      <p className="font-semibold text-white/70">€{p.price}</p>
+                      <p className="font-semibold text-white/70">${p.price}</p>
                     )}
                   </td>
                   <td className="px-5 py-4 text-xs text-white/30">
@@ -424,11 +424,11 @@ export default function ProductsAdminPage() {
                   </div>
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-xs font-semibold text-white/50 mb-1.5">Price (€)</label>
+                      <label className="block text-xs font-semibold text-white/50 mb-1.5">Price ($)</label>
                       <input type="number" value={ep.price} onChange={(e) => setEditProduct({ ...ep, price: Number(e.target.value) })} className={INPUT} />
                     </div>
                     <div>
-                      <label className="block text-xs font-semibold text-white/50 mb-1.5">Compare-at Price (€)</label>
+                      <label className="block text-xs font-semibold text-white/50 mb-1.5">Compare-at Price ($)</label>
                       <input type="number" value={ep.salePrice ?? ''} onChange={(e) => setEditProduct({ ...ep, salePrice: e.target.value ? Number(e.target.value) : null })}
                         className={INPUT} placeholder="Optional" />
                     </div>
@@ -609,7 +609,7 @@ export default function ProductsAdminPage() {
                         {[
                           { label: 'Title', key: 'title' as const, type: 'text' },
                           { label: 'SKU', key: 'sku' as const, type: 'text' },
-                          { label: 'Price (€)', key: 'price' as const, type: 'number' },
+                          { label: 'Price ($)', key: 'price' as const, type: 'number' },
                           { label: 'Stock', key: 'stock' as const, type: 'number' },
                         ].map(({ label, key, type }) => (
                           <div key={key}>

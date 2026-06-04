@@ -174,7 +174,7 @@ export default function AppearancePage() {
           >
             <p className="font-semibold mb-1" style={{ color: theme.sfText }}>Stemuvita™ Hair Cleanse</p>
             <p className="text-sm mb-3" style={{ color: theme.sfTextMuted }}>Plant-based · Sulfate-Free · Clinically Proven</p>
-            <p className="text-xl font-bold" style={{ color: theme.sfPrimary }}>€49</p>
+            <p className="text-xl font-bold" style={{ color: theme.sfPrimary }}>$49</p>
           </div>
           <div className="mt-3 rounded-xl p-3" style={{ background: theme.sfDarkSection }}>
             <p className="text-xs text-white/70">Dark section · Footer · Ingredients background</p>

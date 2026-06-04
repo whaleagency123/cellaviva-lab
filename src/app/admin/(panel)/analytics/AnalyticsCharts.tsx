@@ -45,8 +45,8 @@ export default function AnalyticsCharts({ data }: { data: DataPoint[] }) {
             </defs>
             <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" vertical={false} />
             <XAxis dataKey="date" tick={{ fontSize: 11, fill: 'rgba(255,255,255,0.3)' }} axisLine={false} tickLine={false} />
-            <YAxis tick={{ fontSize: 11, fill: 'rgba(255,255,255,0.3)' }} axisLine={false} tickLine={false} tickFormatter={(v) => `€${v}`} />
-            <Tooltip contentStyle={TOOLTIP_STYLE} formatter={(v: unknown) => [`€${v}`, 'Revenue']} />
+            <YAxis tick={{ fontSize: 11, fill: 'rgba(255,255,255,0.3)' }} axisLine={false} tickLine={false} tickFormatter={(v) => `$${v}`} />
+            <Tooltip contentStyle={TOOLTIP_STYLE} formatter={(v: unknown) => [`$${v}`, 'Revenue']} />
             <Area type="monotone" dataKey="revenue" stroke="#4ade80" strokeWidth={2.5} fill="url(#aRevGrad)" dot={false} activeDot={{ r: 4, fill: '#4ade80' }} />
           </AreaChart>
         </ResponsiveContainer>

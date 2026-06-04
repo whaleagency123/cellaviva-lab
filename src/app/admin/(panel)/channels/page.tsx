@@ -228,7 +228,7 @@ export default function ChannelsPage() {
   function exportCampaigns() {
     const rows = [
       ['Campaign', 'Platform', 'Status', 'Budget', 'Spent', 'Impressions', 'Clicks', 'ROAS', 'Conversions'],
-      ...campaigns.map(c => [c.name, c.platform, c.status, `€${c.budget}`, `€${c.spent}`, c.impressions, c.clicks, `${c.roas}x`, c.conversions])
+      ...campaigns.map(c => [c.name, c.platform, c.status, `$${c.budget}`, `$${c.spent}`, c.impressions, c.clicks, `${c.roas}x`, c.conversions])
     ]
     const csv = rows.map(r => r.map(v => `"${v}"`).join(',')).join('\n')
     const blob = new Blob([csv], { type: 'text/csv' })
@@ -276,7 +276,7 @@ export default function ChannelsPage() {
       <div className="grid grid-cols-2 xl:grid-cols-4 gap-4">
         {[
           { label: 'Connected Platforms', value: `${connected}/${channels.length}`, icon: Zap,          accent: '#4ade80' },
-          { label: 'Ad Spend (Active)',   value: `€${totalSpend.toLocaleString()}`, icon: DollarSign,   accent: '#60a5fa' },
+          { label: 'Ad Spend (Active)',   value: `$${totalSpend.toLocaleString()}`, icon: DollarSign,   accent: '#60a5fa' },
           { label: 'Avg. ROAS',           value: `${roas}×`,                        icon: TrendingUp,    accent: '#a78bfa' },
           { label: 'Conversions',         value: totalConv,                          icon: MousePointer,  accent: '#f59e0b' },
         ].map(k => (
@@ -404,9 +404,9 @@ export default function ChannelsPage() {
                         {c.status}
                       </span>
                     </td>
-                    <td className="px-4 py-3.5 text-white/50 text-xs">€{c.budget}</td>
+                    <td className="px-4 py-3.5 text-white/50 text-xs">${c.budget}</td>
                     <td className="px-4 py-3.5">
-                      <div className="text-xs font-semibold text-white/80">€{c.spent}</div>
+                      <div className="text-xs font-semibold text-white/80">${c.spent}</div>
                       {c.budget > 0 && (
                         <div className="h-1 bg-white/8 rounded-full mt-1 w-16">
                           <div className="h-full rounded-full bg-blue-400" style={{ width: `${Math.min((c.spent / c.budget) * 100, 100)}%` }} />
@@ -415,7 +415,7 @@ export default function ChannelsPage() {
                     </td>
                     <td className="px-4 py-3.5 text-white/50 text-xs">{c.impressions}</td>
                     <td className="px-4 py-3.5 text-white/50 text-xs">{c.clicks > 0 ? c.clicks.toLocaleString() : '—'}</td>
-                    <td className="px-4 py-3.5 text-white/50 text-xs">{c.cpc > 0 ? `€${c.cpc}` : '—'}</td>
+                    <td className="px-4 py-3.5 text-white/50 text-xs">{c.cpc > 0 ? `$${c.cpc}` : '—'}</td>
                     <td className="px-4 py-3.5">
                       {c.roas > 0
                         ? <span className={`text-xs font-bold ${c.roas >= 3 ? 'text-[#4ade80]' : c.roas >= 1.5 ? 'text-amber-400' : 'text-red-400'}`}>{c.roas}×</span>
@@ -634,7 +634,7 @@ export default function ChannelsPage() {
                 </select>
               </div>
               <div>
-                <label className="block text-xs font-semibold text-white/40 uppercase tracking-wider mb-2">Budget (€)</label>
+                <label className="block text-xs font-semibold text-white/40 uppercase tracking-wider mb-2">Budget ($)</label>
                 <input type="number" value={newCampaign.budget} onChange={e => setNewCampaign(p => ({ ...p, budget: e.target.value }))} placeholder="500"
                   className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder-white/20 focus:outline-none focus:border-[#4ade80]/40 transition-colors" />
               </div>
@@ -668,7 +668,7 @@ export default function ChannelsPage() {
                   className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-[#4ade80]/40 transition-colors" />
               </div>
               <div>
-                <label className="block text-xs font-semibold text-white/40 uppercase tracking-wider mb-2">Budget (€)</label>
+                <label className="block text-xs font-semibold text-white/40 uppercase tracking-wider mb-2">Budget ($)</label>
                 <input type="number" value={editCamp.budget} onChange={e => setEditCamp(p => ({ ...p, budget: e.target.value }))}
                   className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-[#4ade80]/40 transition-colors" />
               </div>

@@ -107,7 +107,7 @@ export default function CustomersPage() {
         <div>
           <h1 className="text-2xl font-black text-white">Customers</h1>
           <p className="text-white/40 mt-0.5 text-sm">
-            {loading ? 'Loading…' : `${customers.length} registered customers · €${totalRevenue.toLocaleString()} total revenue`}
+            {loading ? 'Loading…' : `${customers.length} registered customers · $${totalRevenue.toLocaleString()} total revenue`}
           </p>
         </div>
         <button
@@ -124,7 +124,7 @@ export default function CustomersPage() {
         {[
           { label: 'Total Customers', value: customers.length, icon: UserCheck, accent: '#60a5fa', bg: 'bg-blue-500/10' },
           { label: 'Active', value: customers.filter((c) => c.status === 'ACTIVE').length, icon: Star, accent: '#4ade80', bg: 'bg-emerald-500/10' },
-          { label: 'Avg LTV', value: `€${avgLTV}`, icon: TrendingUp, accent: '#a78bfa', bg: 'bg-purple-500/10' },
+          { label: 'Avg LTV', value: `$${avgLTV}`, icon: TrendingUp, accent: '#a78bfa', bg: 'bg-purple-500/10' },
           { label: 'Total Orders', value: totalOrders, icon: ShoppingBag, accent: '#f59e0b', bg: 'bg-amber-500/10' },
         ].map((k) => (
           <div key={k.label} className={`${CARD} p-5 flex items-center gap-4`}>
@@ -215,8 +215,8 @@ export default function CustomersPage() {
                       )}
                     </td>
                     <td className="px-5 py-4 font-semibold text-white/60">{c.totalOrders}</td>
-                    <td className="px-5 py-4 font-bold text-white">€{c.totalSpent}</td>
-                    <td className="px-5 py-4 text-[#4ade80] font-semibold">€{c.ltv}</td>
+                    <td className="px-5 py-4 font-bold text-white">${c.totalSpent}</td>
+                    <td className="px-5 py-4 text-[#4ade80] font-semibold">${c.ltv}</td>
                     <td className="px-5 py-4 text-xs text-white/30">{c.joinedAt}</td>
                     <td className="px-5 py-4 text-xs text-white/30">{c.lastOrder}</td>
                     <td className="px-5 py-4">
@@ -277,8 +277,8 @@ export default function CustomersPage() {
               <div className="grid grid-cols-3 gap-3">
                 {[
                   { label: 'Orders', value: selected.totalOrders },
-                  { label: 'Total Spent', value: `€${selected.totalSpent}` },
-                  { label: 'Lifetime Value', value: `€${selected.ltv}` },
+                  { label: 'Total Spent', value: `$${selected.totalSpent}` },
+                  { label: 'Lifetime Value', value: `$${selected.ltv}` },
                 ].map((m) => (
                   <div key={m.label} className="bg-white/4 border border-white/5 rounded-xl p-3.5 text-center">
                     <p className="text-xl font-black text-white">{m.value}</p>
@@ -310,7 +310,7 @@ export default function CustomersPage() {
                           <p className="text-xs text-white/30">{o.items.join(' · ')}</p>
                           <p className="text-xs text-white/25 mt-0.5 flex items-center gap-1"><Calendar className="w-3 h-3" />{o.date}</p>
                         </div>
-                        <p className="text-sm font-black text-white">€{o.total}</p>
+                        <p className="text-sm font-black text-white">${o.total}</p>
                       </div>
                     ))}
                   </div>

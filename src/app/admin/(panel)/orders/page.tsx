@@ -346,7 +346,7 @@ function NewOrderDrawer({
                         <div className="w-9 h-9 bg-[#4ade80]/10 rounded-lg flex items-center justify-center text-sm flex-shrink-0">🌿</div>
                         <div className="flex-1 min-w-0">
                           <p className="text-sm font-semibold text-white truncate">{p.title}</p>
-                          <p className="text-xs text-white/40">€{unitPrice.toFixed(2)} · Stock: {p.stock}</p>
+                          <p className="text-xs text-white/40">${unitPrice.toFixed(2)} · Stock: {p.stock}</p>
                         </div>
                         {inCart ? (
                           <div className="flex items-center gap-1.5">
@@ -379,12 +379,12 @@ function NewOrderDrawer({
                 {selectedItems.map(({ product, qty }) => (
                   <div key={product.id} className="flex justify-between items-center text-sm">
                     <span className="text-white/70 truncate">{product.title} × {qty}</span>
-                    <span className="text-white font-semibold ml-2">€{((product.salePrice ?? product.price) * qty).toFixed(2)}</span>
+                    <span className="text-white font-semibold ml-2">${((product.salePrice ?? product.price) * qty).toFixed(2)}</span>
                   </div>
                 ))}
                 <div className="border-t border-white/8 pt-2 flex justify-between text-sm font-bold text-white">
                   <span>Subtotal</span>
-                  <span>€{subtotal.toFixed(2)}</span>
+                  <span>${subtotal.toFixed(2)}</span>
                 </div>
               </div>
             )}
@@ -462,7 +462,7 @@ function NewOrderDrawer({
               </select>
             </div>
             <div>
-              <p className={LABEL}>Shipping Fee (€)</p>
+              <p className={LABEL}>Shipping Fee ($)</p>
               <input
                 type="number" min="0" step="0.01"
                 value={shippingAmount}
@@ -476,7 +476,7 @@ function NewOrderDrawer({
           {selectedItems.length > 0 && (
             <div className="bg-[#4ade80]/5 border border-[#4ade80]/15 rounded-xl px-4 py-3 flex justify-between items-center">
               <span className="text-sm font-semibold text-white/60">Order Total</span>
-              <span className="text-xl font-black text-[#4ade80]">€{orderTotal.toFixed(2)}</span>
+              <span className="text-xl font-black text-[#4ade80]">${orderTotal.toFixed(2)}</span>
             </div>
           )}
 
@@ -574,7 +574,7 @@ export default function OrdersPage() {
       ...filtered.map(o => [
         o.id, o.customer, o.email,
         new Date(o.date).toLocaleDateString(),
-        o.status, o.payment, o.source ?? 'STOREFRONT', `€${o.total}`,
+        o.status, o.payment, o.source ?? 'STOREFRONT', `$${o.total}`,
       ])
     ]
     const csv = rows.map(r => r.map(v => `"${v}"`).join(',')).join('\n')
@@ -593,10 +593,10 @@ export default function OrdersPage() {
       </head><body>
       <h2>CELLAVIVA — Order ${o.id}</h2>
       <p><b>Customer:</b> ${o.customer} | <b>Email:</b> ${o.email}</p>
-      <p><b>Status:</b> ${o.status} | <b>Payment:</b> ${o.payment} | <b>Channel:</b> ${o.source ?? 'Storefront'} | <b>Total:</b> €${o.total}</p>
+      <p><b>Status:</b> ${o.status} | <b>Payment:</b> ${o.payment} | <b>Channel:</b> ${o.source ?? 'Storefront'} | <b>Total:</b> $${o.total}</p>
       <p><b>Ship to:</b> ${o.shippingAddress.line1}, ${o.shippingAddress.city}, ${o.shippingAddress.country}</p>
       <table><tr><th>Product</th><th>Qty</th><th>Price</th></tr>
-      ${o.items.map(i => `<tr><td>${i.name}</td><td>${i.qty}</td><td>€${i.price}</td></tr>`).join('')}
+      ${o.items.map(i => `<tr><td>${i.name}</td><td>${i.qty}</td><td>$${i.price}</td></tr>`).join('')}
       </table></body></html>`)
     win.document.close(); win.print()
   }
@@ -691,7 +691,7 @@ export default function OrdersPage() {
                   <td className="px-4 py-4">
                     <span className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-semibold ${paymentBadge[o.payment]}`}>{o.payment}</span>
                   </td>
-                  <td className="px-4 py-4 font-bold text-white">€{o.total.toFixed(2)}</td>
+                  <td className="px-4 py-4 font-bold text-white">${o.total.toFixed(2)}</td>
                   <td className="px-4 py-4">
                     <div className="flex items-center gap-1.5">
                       <select value={o.status} onChange={(e) => updateStatus(o.id, e.target.value as FulfillmentStatus)}
@@ -770,15 +770,15 @@ export default function OrdersPage() {
                         <p className="text-sm font-semibold text-white">{item.name}</p>
                         <p className="text-xs text-white/30">{item.sku ? `SKU: ${item.sku} · ` : ''}Qty: {item.qty}</p>
                       </div>
-                      <p className="text-sm font-bold text-white">€{(item.price * item.qty).toFixed(2)}</p>
+                      <p className="text-sm font-bold text-white">${(item.price * item.qty).toFixed(2)}</p>
                     </div>
                   ))}
                 </div>
                 <div className="border-t border-white/8 mt-4 pt-4 space-y-1.5 text-sm">
-                  <div className="flex justify-between text-white/50"><span>Subtotal</span><span>€{detail.subtotal.toFixed(2)}</span></div>
-                  <div className="flex justify-between text-white/50"><span>Shipping</span><span>{detail.shipping === 0 ? 'Free' : `€${detail.shipping.toFixed(2)}`}</span></div>
-                  {detail.tax > 0 && <div className="flex justify-between text-white/50"><span>Tax</span><span>€{detail.tax.toFixed(2)}</span></div>}
-                  <div className="flex justify-between font-black text-white text-base border-t border-white/8 pt-2 mt-1"><span>Total</span><span>€{detail.total.toFixed(2)}</span></div>
+                  <div className="flex justify-between text-white/50"><span>Subtotal</span><span>${detail.subtotal.toFixed(2)}</span></div>
+                  <div className="flex justify-between text-white/50"><span>Shipping</span><span>{detail.shipping === 0 ? 'Free' : `$${detail.shipping.toFixed(2)}`}</span></div>
+                  {detail.tax > 0 && <div className="flex justify-between text-white/50"><span>Tax</span><span>${detail.tax.toFixed(2)}</span></div>}
+                  <div className="flex justify-between font-black text-white text-base border-t border-white/8 pt-2 mt-1"><span>Total</span><span>${detail.total.toFixed(2)}</span></div>
                 </div>
               </div>
 

@@ -32,8 +32,8 @@ export default function SubCharts() {
             </defs>
             <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" vertical={false} />
             <XAxis dataKey="month" tick={{ fontSize: 10, fill: 'rgba(255,255,255,0.3)' }} tickLine={false} axisLine={false} />
-            <YAxis tick={{ fontSize: 10, fill: 'rgba(255,255,255,0.3)' }} tickLine={false} axisLine={false} tickFormatter={(v) => `€${v}`} />
-            <Tooltip contentStyle={TOOLTIP_STYLE} formatter={(v: unknown) => [`€${v}`, 'MRR']} />
+            <YAxis tick={{ fontSize: 10, fill: 'rgba(255,255,255,0.3)' }} tickLine={false} axisLine={false} tickFormatter={(v) => `$${v}`} />
+            <Tooltip contentStyle={TOOLTIP_STYLE} formatter={(v: unknown) => [`$${v}`, 'MRR']} />
             <Area type="monotone" dataKey="mrr" stroke="#4ade80" strokeWidth={2} fill="url(#gMrr)" dot={false} />
           </AreaChart>
         </ResponsiveContainer>

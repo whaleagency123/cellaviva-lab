@@ -14,13 +14,13 @@ interface Notification {
 }
 
 const INITIAL: Notification[] = [
-  { id: 'n1',  type: 'order',    title: 'New Order #ORD-4822',              body: 'Nina Park placed a new order for €49.00.',                        time: '2 min ago',  read: false },
-  { id: 'n2',  type: 'payment',  title: 'Payment Confirmed #ORD-4821',      body: 'Stripe payment of €98.00 confirmed for Sarah Miller.',            time: '14 min ago', read: false },
+  { id: 'n1',  type: 'order',    title: 'New Order #ORD-4822',              body: 'Nina Park placed a new order for $49.00.',                        time: '2 min ago',  read: false },
+  { id: 'n2',  type: 'payment',  title: 'Payment Confirmed #ORD-4821',      body: 'Stripe payment of $98.00 confirmed for Sarah Miller.',            time: '14 min ago', read: false },
   { id: 'n3',  type: 'stock',    title: 'Low Stock: Hair Cleanse',          body: 'Stemuvita™ Hair Cleanse is below threshold — 47 units remaining.', time: '1 hr ago',  read: false },
   { id: 'n4',  type: 'order',    title: 'Order #ORD-4820 Shipped',          body: 'James Thompson\'s order was shipped via DHL (PN9876543210).',      time: '2 hr ago',  read: true  },
   { id: 'n5',  type: 'customer', title: 'New Customer Signup',              body: 'elena@example.com created a new account.',                        time: '3 hr ago',  read: true  },
   { id: 'n6',  type: 'order',    title: 'Return Request #RET-002',          body: 'Lucas Becker submitted a return request for Scalp Serum.',        time: '5 hr ago',  read: true  },
-  { id: 'n7',  type: 'payment',  title: 'Subscription Renewed SUB-1007',   body: 'Yuki Tanaka\'s quarterly subscription renewed — €105.00 charged.', time: '6 hr ago',  read: true  },
+  { id: 'n7',  type: 'payment',  title: 'Subscription Renewed SUB-1007',   body: 'Yuki Tanaka\'s quarterly subscription renewed — $105.00 charged.', time: '6 hr ago',  read: true  },
   { id: 'n8',  type: 'system',   title: 'Appearance Settings Updated',     body: 'Primary colour changed to #3a79a9 by Admin.',                     time: '1 day ago',  read: true  },
   { id: 'n9',  type: 'stock',    title: 'Scalp Serum Restocked',           body: 'Stemuvita™ Scalp Serum stock updated to 63 units.',               time: '1 day ago',  read: true  },
   { id: 'n10', type: 'customer', title: '5-Star Review Pending Approval',  body: 'Sarah Miller left a 5-star review — awaiting moderation.',        time: '2 days ago', read: true  },

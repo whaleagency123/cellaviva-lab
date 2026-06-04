@@ -10,6 +10,7 @@ import { CookieConsent } from '@/components/storefront/CookieConsent'
 import { PixelScripts } from '@/components/storefront/PixelScripts'
 import { PWARegister } from '@/components/storefront/PWARegister'
 import { FloatingWhatsApp } from '@/components/storefront/FloatingWhatsApp'
+import { CurrencyLoader } from '@/components/storefront/CurrencyLoader'
 import { LanguageProvider } from '@/lib/i18n'
 import { ThemeProvider } from '@/lib/theme'
 import { getStoreSettings } from '@/lib/settings'
@@ -80,6 +81,7 @@ export default async function StorefrontLayout({ children }: { children: React.R
         <PixelScripts />
         <PWARegister />
         <FloatingWhatsApp />
+        <CurrencyLoader />
       </AuthProvider>
     </LanguageProvider>
     </ThemeProvider>

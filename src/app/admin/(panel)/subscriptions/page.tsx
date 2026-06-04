@@ -123,9 +123,9 @@ export default function SubscriptionsPage() {
 
   const kpis = [
     { label: 'Active Subscribers', value: active, icon: Users, accent: '#4ade80', change: +14 },
-    { label: 'MRR', value: `€${Math.round(mrr).toLocaleString()}`, icon: DollarSign, accent: '#60a5fa', change: +10.2 },
+    { label: 'MRR', value: `$${Math.round(mrr).toLocaleString()}`, icon: DollarSign, accent: '#60a5fa', change: +10.2 },
     { label: 'Churn Rate', value: '1.7%', icon: TrendingDown, accent: '#f87171', change: -0.2 },
-    { label: 'Avg. LTV', value: '€347', icon: BarChart2, accent: '#a78bfa', change: +5.8 },
+    { label: 'Avg. LTV', value: '$347', icon: BarChart2, accent: '#a78bfa', change: +5.8 },
   ]
 
   const FILTER_TABS = [
@@ -220,7 +220,7 @@ export default function SubscriptionsPage() {
                     <span className={`inline-flex rounded-full px-2.5 py-0.5 text-[10px] font-semibold ${STATUS_STYLE[s.status]}`}>{s.status}</span>
                   </td>
                   <td className="px-5 py-3.5 text-white/50 text-xs">{s.nextBilling}</td>
-                  <td className="px-5 py-3.5 font-bold text-white text-xs">€{s.totalRevenue}</td>
+                  <td className="px-5 py-3.5 font-bold text-white text-xs">${s.totalRevenue}</td>
                   <td className="px-5 py-3.5">
                     <ChevronRight className="w-4 h-4 text-white/20" />
                   </td>
@@ -265,9 +265,9 @@ export default function SubscriptionsPage() {
               {/* Stats */}
               <div className="grid grid-cols-3 gap-3">
                 {[
-                  { label: 'Price', value: `€${selected.price}/${selected.plan === 'Monthly' ? 'mo' : selected.plan === 'Quarterly' ? 'qtr' : 'yr'}` },
+                  { label: 'Price', value: `$${selected.price}/${selected.plan === 'Monthly' ? 'mo' : selected.plan === 'Quarterly' ? 'qtr' : 'yr'}` },
                   { label: 'Orders', value: selected.totalOrders },
-                  { label: 'Revenue', value: `€${selected.totalRevenue}` },
+                  { label: 'Revenue', value: `$${selected.totalRevenue}` },
                 ].map(s => (
                   <div key={s.label} className="bg-white/4 rounded-xl p-3 text-center">
                     <p className="text-white font-bold text-sm">{s.value}</p>

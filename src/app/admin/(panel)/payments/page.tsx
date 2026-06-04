@@ -26,7 +26,7 @@ interface Settings {
 }
 
 const DEFAULTS: Settings = {
-  paymentCurrency: 'eur',
+  paymentCurrency: 'usd',
   paymentShippingThreshold: '50',
   paymentShippingFee: '9.99',
   paymentTaxRate: '0',
@@ -258,11 +258,15 @@ export default function PaymentsPage() {
           <div>
             <label className={LABEL}>Currency</label>
             <select value={settings.paymentCurrency} onChange={(e) => set('paymentCurrency', e.target.value)} className={INPUT}>
-              <option value="eur">EUR — Euro (€)</option>
               <option value="usd">USD — US Dollar ($)</option>
+              <option value="eur">EUR — Euro (€)</option>
               <option value="gbp">GBP — British Pound (£)</option>
-              <option value="cad">CAD — Canadian Dollar (CA$)</option>
-              <option value="aud">AUD — Australian Dollar (A$)</option>
+              <option value="lbp">LBP — Lebanese Pound</option>
+              <option value="sar">SAR — Saudi Riyal</option>
+              <option value="aed">AED — UAE Dirham</option>
+              <option value="kwd">KWD — Kuwaiti Dinar</option>
+              <option value="cad">CAD — Canadian Dollar</option>
+              <option value="aud">AUD — Australian Dollar</option>
             </select>
           </div>
 

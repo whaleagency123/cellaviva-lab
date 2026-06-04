@@ -145,8 +145,8 @@ export function HeroSection({
                       <p className="text-xs text-[var(--sf-text-muted)] mt-0.5">Plant-Based · Sulfate-Free</p>
                     </div>
                     <div className="text-right">
-                      <p className="text-lg font-bold text-[var(--sf-primary)]">€49</p>
-                      <p className="text-xs text-gray-400 line-through">€100</p>
+                      <p className="text-lg font-bold text-[var(--sf-primary)]">$49</p>
+                      <p className="text-xs text-gray-400 line-through">$100</p>
                     </div>
                   </div>
                 </div>

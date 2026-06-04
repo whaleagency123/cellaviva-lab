@@ -264,9 +264,9 @@ const content: Record<string, React.ReactNode> = {
       <div>
         <h4 className="font-bold text-gray-900 mb-2">Free Shipping</h4>
         <p>
-          We offer <strong>free standard shipping</strong> on all orders over €50 worldwide.
+          We offer <strong>free standard shipping</strong> on all orders over $50 worldwide.
           Standard delivery takes 3–7 business days. Express shipping (1–3 days) is available at
-          checkout for €9.99.
+          checkout for $9.99.
         </p>
       </div>
       <div>

@@ -108,11 +108,11 @@ export default function AnalyticsPage() {
   const avgOrder = (totalRevenue / totalOrders).toFixed(0)
 
   const kpis = [
-    { label: 'Revenue', value: `€${totalRevenue.toLocaleString()}`, trend: '+14.2%', up: true, icon: DollarSign, accent: '#4ade80', bg: 'bg-emerald-500/10' },
+    { label: 'Revenue', value: `$${totalRevenue.toLocaleString()}`, trend: '+14.2%', up: true, icon: DollarSign, accent: '#4ade80', bg: 'bg-emerald-500/10' },
     { label: 'Orders', value: totalOrders, trend: '+11.8%', up: true, icon: ShoppingBag, accent: '#60a5fa', bg: 'bg-blue-500/10' },
     { label: 'Sessions', value: totalSessions.toLocaleString(), trend: '+8.3%', up: true, icon: MousePointer, accent: '#a78bfa', bg: 'bg-purple-500/10' },
     { label: 'Conv. Rate', value: `${convRate}%`, trend: '+0.4%', up: true, icon: TrendingUp, accent: '#f59e0b', bg: 'bg-amber-500/10' },
-    { label: 'Avg. Order', value: `€${avgOrder}`, trend: '-2.1%', up: false, icon: CreditCard, accent: '#f87171', bg: 'bg-red-500/10' },
+    { label: 'Avg. Order', value: `$${avgOrder}`, trend: '-2.1%', up: false, icon: CreditCard, accent: '#f87171', bg: 'bg-red-500/10' },
   ]
 
   return (
@@ -184,7 +184,7 @@ export default function AnalyticsPage() {
               <div key={p.name}>
                 <div className="flex justify-between mb-2 text-sm">
                   <span className="font-semibold text-white/80 line-clamp-1">{p.name}</span>
-                  <span className="font-bold text-white ml-4 flex-shrink-0">€{p.revenue.toLocaleString()}</span>
+                  <span className="font-bold text-white ml-4 flex-shrink-0">${p.revenue.toLocaleString()}</span>
                 </div>
                 <div className="h-2.5 bg-white/8 rounded-full overflow-hidden">
                   <div className="h-full bg-gradient-to-r from-[#4ade80] to-[#22c55e] rounded-full" style={{ width: `${p.pct}%` }} />
@@ -205,7 +205,7 @@ export default function AnalyticsPage() {
                 <span className="text-white/60">{g.country}</span>
                 <div className="flex items-center gap-4">
                   <span className="text-white/30 text-xs">{g.orders} orders</span>
-                  <span className="font-bold text-white w-20 text-right">€{g.revenue.toLocaleString()}</span>
+                  <span className="font-bold text-white w-20 text-right">${g.revenue.toLocaleString()}</span>
                 </div>
               </div>
             ))}
@@ -238,7 +238,7 @@ export default function AnalyticsPage() {
                   <td className="px-5 py-4">
                     <span className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-semibold ${PAYMENT_BADGE[p.status]}`}>{p.status}</span>
                   </td>
-                  <td className="px-5 py-4 font-bold text-white">€{p.amount.toFixed(2)}</td>
+                  <td className="px-5 py-4 font-bold text-white">${p.amount.toFixed(2)}</td>
                 </tr>
               ))}
             </tbody>

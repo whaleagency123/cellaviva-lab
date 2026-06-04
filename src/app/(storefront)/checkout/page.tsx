@@ -307,7 +307,7 @@ export default function CheckoutPage() {
     const method = order.paymentMethod === 'whish' ? '💳 Whish Money'
                  : order.paymentMethod === 'cod'   ? '💵 Cash on Delivery'
                  :                                   '💳 Credit / Debit Card'
-    const items  = order.items.map((i: any) => `  • ${i.title} × ${i.quantity} = €${(i.price * i.quantity).toFixed(2)}`).join('\n')
+    const items  = order.items.map((i: any) => `  • ${i.title} × ${i.quantity} = $${(i.price * i.quantity).toFixed(2)}`).join('\n')
     const addr   = order.shippingAddress
     return encodeURIComponent(
       `🛒 *New Order — CELLAVIVA*\n\n` +
@@ -321,7 +321,7 @@ export default function CheckoutPage() {
       `🚚 *Shipping Address:*\n` +
       `  ${addr.address}\n` +
       `  ${addr.city}, ${addr.country} ${addr.postalCode}\n\n` +
-      `💵 *Total: €${order.total.toFixed(2)}*`
+      `💵 *Total: $${order.total.toFixed(2)}*`
     )
   }
 
@@ -436,7 +436,7 @@ export default function CheckoutPage() {
             <div className="bg-purple-50 border border-purple-200 rounded-2xl p-4 mb-4 text-left">
               <p className="font-bold text-purple-700 text-sm mb-1">Whish Payment Instructions</p>
               <p className="text-purple-600 text-xs leading-relaxed">
-                Open your Whish app → Send Money → Enter our Whish number (sent via WhatsApp) → Amount: €{manualOrderData.total.toFixed(2)} → Send screenshot to confirm.
+                Open your Whish app → Send Money → Enter our Whish number (sent via WhatsApp) → Amount: ${manualOrderData.total.toFixed(2)} → Send screenshot to confirm.
               </p>
             </div>
           )}

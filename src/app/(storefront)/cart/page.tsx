@@ -291,7 +291,7 @@ export default function CartPage() {
               {/* Trust badges */}
               <div className="grid grid-cols-3 gap-2 pt-2">
                 {[
-                  { icon: Truck, label: 'Free ship €50+' },
+                  { icon: Truck, label: 'Free ship $50+' },
                   { icon: Shield, label: 'Secure checkout' },
                   { icon: RefreshCw, label: '30-day returns' },
                 ].map(({ icon: Icon, label }) => (

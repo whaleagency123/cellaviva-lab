@@ -55,7 +55,7 @@ export function SubscriptionSection({ perks = DEFAULT_SETTINGS.subscriptionPerks
                   <div className="bg-white/8 rounded-2xl p-6 border border-white/15">
                     <div className="flex items-start justify-between mb-2">
                       <div><p className="text-white font-semibold">{ar ? t('subscription.oneTime') : 'One-Time Purchase'}</p><p className="text-white/45 text-xs mt-0.5">{ar ? t('subscription.noCommitment') : 'No commitment'}</p></div>
-                      <div className="text-right"><p className="text-2xl font-bold text-white">€49</p><p className="text-white/45 text-xs">{ar ? t('subscription.perBottle') : 'per bottle'}</p></div>
+                      <div className="text-right"><p className="text-2xl font-bold text-white">$49</p><p className="text-white/45 text-xs">{ar ? t('subscription.perBottle') : 'per bottle'}</p></div>
                     </div>
                     <div className="flex gap-2 mt-3 flex-wrap">
                       {['Standard shipping', '30-day guarantee'].map((f) => (
@@ -68,7 +68,7 @@ export function SubscriptionSection({ perks = DEFAULT_SETTINGS.subscriptionPerks
                     <div className="absolute top-0 right-0 bg-white text-[var(--sf-text)] text-xs font-bold px-3 py-1.5 rounded-bl-2xl">{ar ? t('subscription.mostPopular') : 'MOST POPULAR'}</div>
                     <div className="flex items-start justify-between mb-2">
                       <div><p className="text-white font-semibold">{ar ? t('subscription.badge') : 'Subscribe & Save'}</p><p className="text-white/70 text-xs mt-0.5">{ar ? t('subscription.autoDelivery') : 'Delivered every 30 days'}</p></div>
-                      <div className="text-right"><p className="text-2xl font-bold text-white">€41.65</p><p className="text-white/60 text-xs line-through">€49.00</p></div>
+                      <div className="text-right"><p className="text-2xl font-bold text-white">$41.65</p><p className="text-white/60 text-xs line-through">$49.00</p></div>
                     </div>
                     <div className="flex gap-2 mt-3 flex-wrap">
                       {['Free priority shipping', '30-day guarantee', 'Cancel anytime', 'Loyalty points'].map((f) => (
@@ -80,7 +80,7 @@ export function SubscriptionSection({ perks = DEFAULT_SETTINGS.subscriptionPerks
                   <div className="bg-white/8 rounded-2xl p-6 border border-white/15">
                     <div className="flex items-start justify-between mb-2">
                       <div><p className="text-white font-semibold">Bundle Subscription</p><p className="text-white/45 text-xs mt-0.5">Cleanser + Serum, every 30 days</p></div>
-                      <div className="text-right"><p className="text-2xl font-bold text-white">€71</p><p className="text-white/45 text-xs line-through">€91.00</p></div>
+                      <div className="text-right"><p className="text-2xl font-bold text-white">$71</p><p className="text-white/45 text-xs line-through">$91.00</p></div>
                     </div>
                     <div className="flex gap-2 mt-3 flex-wrap">
                       {['Save 22%', 'Free shipping', 'Best results'].map((f) => (

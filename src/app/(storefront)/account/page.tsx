@@ -271,7 +271,7 @@ export default function AccountPage() {
                   <p className="text-xs text-gray-400">Orders</p>
                 </div>
                 <div>
-                  <p className="text-xl font-black text-[#2d6a4f]">€{totalSpent}</p>
+                  <p className="text-xl font-black text-[#2d6a4f]">${totalSpent}</p>
                   <p className="text-xs text-gray-400">Spent</p>
                 </div>
               </div>
@@ -317,7 +317,7 @@ export default function AccountPage() {
                   <div className="grid grid-cols-3 gap-4">
                     {[
                       { label: 'Total Orders', value: orders.length },
-                      { label: 'Total Spent', value: `€${totalSpent}` },
+                      { label: 'Total Spent', value: `$${totalSpent}` },
                       { label: 'Active Subs', value: subscriptions.filter((s) => s.status === 'ACTIVE').length },
                     ].map((s) => (
                       <div key={s.label} className="bg-white/10 rounded-2xl p-4 text-center">
@@ -354,7 +354,7 @@ export default function AccountPage() {
                           <span className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold ${STATUS_BADGE[o.status]}`}>
                             <SI className="w-3 h-3" />{o.status}
                           </span>
-                          <span className="font-bold text-gray-900">€{o.total}</span>
+                          <span className="font-bold text-gray-900">${o.total}</span>
                         </div>
                       </div>
                     )
@@ -380,7 +380,7 @@ export default function AccountPage() {
                           </div>
                         </div>
                         <div className="text-right">
-                          <p className="font-bold text-[#2d6a4f]">€{s.price}/mo</p>
+                          <p className="font-bold text-[#2d6a4f]">${s.price}/mo</p>
                           <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${SUB_BADGE[s.status]}`}>{s.status}</span>
                         </div>
                       </div>
@@ -435,7 +435,7 @@ export default function AccountPage() {
                             </div>
                             <p className="text-xs text-gray-400">{o.date}</p>
                           </div>
-                          <p className="font-black text-lg text-gray-900">€{o.total}</p>
+                          <p className="font-black text-lg text-gray-900">${o.total}</p>
                         </div>
 
                         {/* Items */}
@@ -449,7 +449,7 @@ export default function AccountPage() {
                                 <p className="text-sm font-semibold text-gray-800">{item.name}</p>
                                 <p className="text-xs text-gray-400">Qty: {item.qty}</p>
                               </div>
-                              <p className="text-sm font-bold text-gray-900">€{item.price}</p>
+                              <p className="text-sm font-bold text-gray-900">${item.price}</p>
                             </div>
                           ))}
                         </div>
@@ -503,7 +503,7 @@ export default function AccountPage() {
 
                     <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-5">
                       {[
-                        { label: 'Price', value: `€${s.price}/mo` },
+                        { label: 'Price', value: `$${s.price}/mo` },
                         { label: 'Frequency', value: s.interval },
                         { label: 'Next Delivery', value: s.nextDelivery },
                       ].map((f) => (

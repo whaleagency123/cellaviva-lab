@@ -58,10 +58,10 @@ const REVENUE_DATA: Record<Range, { label: string; revenue: number; orders: numb
 }
 
 const SUMMARY: Record<Range, { revenue: string; orders: string; sessions: string; conversion: string; aov: string; revChange: number; ordChange: number }> = {
-  'Today':   { revenue: '€1,029',   orders: '21',    sessions: '312',    conversion: '6.7%', aov: '€49.0', revChange: +14.2, ordChange: +11.1 },
-  '7 days':  { revenue: '€14,357',  orders: '293',   sessions: '4,218',  conversion: '6.9%', aov: '€49.0', revChange: +8.4,  ordChange: +6.2  },
-  '30 days': { revenue: '€54,891',  orders: '1,120', sessions: '16,340', conversion: '6.9%', aov: '€49.0', revChange: +12.5, ordChange: +8.2  },
-  '90 days': { revenue: '€142,310', orders: '2,904', sessions: '43,200', conversion: '6.7%', aov: '€49.0', revChange: +22.3, ordChange: +18.6 },
+  'Today':   { revenue: '$1,029',   orders: '21',    sessions: '312',    conversion: '6.7%', aov: '$49.0', revChange: +14.2, ordChange: +11.1 },
+  '7 days':  { revenue: '$14,357',  orders: '293',   sessions: '4,218',  conversion: '6.9%', aov: '$49.0', revChange: +8.4,  ordChange: +6.2  },
+  '30 days': { revenue: '$54,891',  orders: '1,120', sessions: '16,340', conversion: '6.9%', aov: '$49.0', revChange: +12.5, ordChange: +8.2  },
+  '90 days': { revenue: '$142,310', orders: '2,904', sessions: '43,200', conversion: '6.7%', aov: '$49.0', revChange: +22.3, ordChange: +18.6 },
 }
 
 const LOW_STOCK = [
@@ -74,7 +74,7 @@ const TOP_PRODUCTS = [
 ]
 const ACTIVITY = [
   { time: '2 min ago',  text: 'New order #ORD-4822 from Nina Park',        type: 'order'    },
-  { time: '14 min ago', text: 'Payment confirmed for #ORD-4821 (€98)',     type: 'payment'  },
+  { time: '14 min ago', text: 'Payment confirmed for #ORD-4821 ($98)',     type: 'payment'  },
   { time: '1 hr ago',   text: '#ORD-4820 shipped via DHL',                 type: 'ship'     },
   { time: '2 hr ago',   text: 'New customer: elena@example.com',           type: 'customer' },
   { time: '3 hr ago',   text: 'Low stock alert: Hair Cleanse at 47 units', type: 'alert'    },
@@ -178,7 +178,7 @@ export default function AdminDashboard() {
     const data = realStats?.recentOrders ?? RECENT_ORDERS
     const rows = [
       ['Order ID', 'Customer', 'Date', 'Status', 'Total'],
-      ...data.map(o => [o.id, o.customer, o.date, o.status, `€${o.total}`])
+      ...data.map(o => [o.id, o.customer, o.date, o.status, `$${o.total}`])
     ]
     const csv = rows.map(r => r.map(v => `"${v}"`).join(',')).join('\n')
     const blob = new Blob([csv], { type: 'text/csv' })
@@ -191,7 +191,7 @@ export default function AdminDashboard() {
   const hasBank = bank.payoutIBAN || bank.payoutAccountNumber
 
   // Use real stats if available, fall back to mock data
-  const realRevenue = realStats ? `€${realStats.totalRevenue.toLocaleString('en-IE', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}` : summary.revenue
+  const realRevenue = realStats ? `$${realStats.totalRevenue.toLocaleString('en-IE', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}` : summary.revenue
   const realOrders  = realStats ? String(realStats.totalOrders) : summary.orders
   const recentOrdersData = realStats?.recentOrders?.length
     ? realStats.recentOrders.map(o => ({
@@ -280,7 +280,7 @@ export default function AdminDashboard() {
                         </div>
                         <div>
                           <p className="text-xs font-semibold text-white/80">New order {o.id}</p>
-                          <p className="text-xs text-white/40 mt-0.5">{o.customer} — €{o.total}</p>
+                          <p className="text-xs text-white/40 mt-0.5">{o.customer} — ${o.total}</p>
                         </div>
                       </div>
                     ))}
@@ -346,7 +346,7 @@ export default function AdminDashboard() {
               <div key={p.name}>
                 <div className="flex justify-between text-sm mb-2">
                   <span className="font-medium text-white/70 truncate pr-2 text-xs">{p.name}</span>
-                  <span className="font-bold text-white flex-shrink-0 text-xs">€{p.revenue.toLocaleString()}</span>
+                  <span className="font-bold text-white flex-shrink-0 text-xs">${p.revenue.toLocaleString()}</span>
                 </div>
                 <div className="h-1.5 bg-white/8 rounded-full overflow-hidden">
                   <div className="h-full rounded-full transition-all duration-700" style={{ width: `${p.pct}%`, background: p.color }} />
@@ -398,7 +398,7 @@ export default function AdminDashboard() {
                     <td className="px-5 py-3.5">
                       <span className={`inline-flex rounded-full px-2.5 py-0.5 text-[10px] font-semibold ${STATUS_STYLE[o.status]}`}>{o.status}</span>
                     </td>
-                    <td className="px-5 py-3.5 font-bold text-white text-xs">€{o.total.toFixed(2)}</td>
+                    <td className="px-5 py-3.5 font-bold text-white text-xs">${o.total.toFixed(2)}</td>
                   </tr>
                 ))}
               </tbody>

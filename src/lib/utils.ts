@@ -5,10 +5,14 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
-export function formatPrice(amount: number, currency = 'EUR') {
-  return new Intl.NumberFormat('en-EU', {
+// Module-level currency — set by CurrencyLoader on the client after reading admin settings
+let _storeCurrency = 'USD'
+export function setStoreCurrency(c: string) { _storeCurrency = c.toUpperCase() }
+
+export function formatPrice(amount: number, currency?: string) {
+  return new Intl.NumberFormat('en-US', {
     style: 'currency',
-    currency,
+    currency: currency ?? _storeCurrency,
     minimumFractionDigits: 2,
   }).format(amount)
 }

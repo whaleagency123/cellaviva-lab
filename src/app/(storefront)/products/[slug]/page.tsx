@@ -373,7 +373,7 @@ export default function ProductPage() {
             {/* Trust row */}
             <div className="grid grid-cols-3 gap-3">
               {[
-                { icon: '🚚', label: 'Free shipping', sub: 'on orders €50+' },
+                { icon: '🚚', label: 'Free shipping', sub: 'on orders $50+' },
                 { icon: '🛡️', label: '30-day returns', sub: 'no questions asked' },
                 { icon: '🌿', label: '100% plant-based', sub: 'vegan & cruelty-free' },
               ].map((t) => (

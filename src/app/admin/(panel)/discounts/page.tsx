@@ -51,7 +51,7 @@ const STATUS_BADGE: Record<DiscountStatus, string> = {
 const STATUS_ICON: Record<DiscountStatus, React.ElementType> = {
   ACTIVE: CheckCircle, EXPIRED: XCircle, DISABLED: XCircle,
 }
-const TYPE_LABEL: Record<DiscountType, string> = { PERCENTAGE: '% Off', FIXED: '€ Off' }
+const TYPE_LABEL: Record<DiscountType, string> = { PERCENTAGE: '% Off', FIXED: '$ Off' }
 const TYPE_ICON: Record<DiscountType, React.ElementType> = { PERCENTAGE: Percent, FIXED: DollarSign }
 
 function generateCode() {
@@ -239,10 +239,10 @@ export default function DiscountsPage() {
                       </span>
                     </td>
                     <td className="px-5 py-4 font-bold text-white">
-                      {d.type === 'PERCENTAGE' ? `${d.value}%` : `€${d.value}`}
+                      {d.type === 'PERCENTAGE' ? `${d.value}%` : `$${d.value}`}
                     </td>
                     <td className="px-5 py-4 text-xs text-white/40">
-                      {d.minOrder ? `€${d.minOrder}+` : <span className="text-white/20">None</span>}
+                      {d.minOrder ? `$${d.minOrder}+` : <span className="text-white/20">None</span>}
                     </td>
                     <td className="px-5 py-4">
                       <div className="min-w-[100px]">
@@ -336,7 +336,7 @@ export default function DiscountsPage() {
               {/* Value */}
               <div>
                 <label className="block text-xs font-semibold text-white/50 mb-1.5">
-                  {form.type === 'PERCENTAGE' ? 'Percentage Off (%)' : 'Amount Off (€)'}
+                  {form.type === 'PERCENTAGE' ? 'Percentage Off (%)' : 'Amount Off ($)'}
                 </label>
                 <input type="number" value={form.value} onChange={(e) => setForm({ ...form, value: Number(e.target.value) })}
                   min={1} max={form.type === 'PERCENTAGE' ? 100 : undefined} className={INPUT} />
@@ -344,7 +344,7 @@ export default function DiscountsPage() {
 
               {/* Min order */}
               <div>
-                <label className="block text-xs font-semibold text-white/50 mb-1.5">Minimum Order Value (€)</label>
+                <label className="block text-xs font-semibold text-white/50 mb-1.5">Minimum Order Value ($)</label>
                 <input type="number" value={form.minOrder} onChange={(e) => setForm({ ...form, minOrder: e.target.value })}
                   className={INPUT} placeholder="No minimum" />
               </div>

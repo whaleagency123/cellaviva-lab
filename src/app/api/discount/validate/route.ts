@@ -34,7 +34,7 @@ export async function POST(req: NextRequest) {
 
     if (discount.minOrder !== null && orderTotal < discount.minOrder) {
       return NextResponse.json(
-        { error: `Minimum order of €${discount.minOrder.toFixed(2)} required` },
+        { error: `Minimum order of $${discount.minOrder.toFixed(2)} required` },
         { status: 400 },
       )
     }

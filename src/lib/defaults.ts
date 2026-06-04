@@ -28,14 +28,14 @@ export const DEFAULT_SETTINGS: StoreSettings = {
   sfIconCart:       'ShoppingBag',
 
   // ── Announcement bar ────────────────────────────────────────────────────
-  announcementText: '100% Nature • Free Worldwide Shipping on Orders Over €50 • 30-Day Hassle-Free Returns',
+  announcementText: '100% Nature • Free Worldwide Shipping on Orders Over $50 • 30-Day Hassle-Free Returns',
 
   // ── Marquee strip ───────────────────────────────────────────────────────
   marqueeItems: [
     '100% Plant-Based Formula',
     'Clinically Proven Results',
     'Sulfate & Paraben Free',
-    'Free Shipping on €50+',
+    'Free Shipping on $50+',
     '30-Day Money-Back Guarantee',
     'Vegan & Cruelty-Free',
     '12,000+ Happy Customers',
@@ -259,7 +259,7 @@ export const DEFAULT_SETTINGS: StoreSettings = {
     {
       id: '4',
       question: 'Do you offer free shipping?',
-      answer: 'We offer free worldwide shipping on all orders over €50. Standard delivery takes 3–7 business days depending on your location.',
+      answer: 'We offer free worldwide shipping on all orders over $50. Standard delivery takes 3–7 business days depending on your location.',
     },
     {
       id: '5',

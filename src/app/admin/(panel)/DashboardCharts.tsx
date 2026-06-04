@@ -42,10 +42,10 @@ export default function DashboardCharts({ chartData }: { chartData: DataPoint[] 
             </defs>
             <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" vertical={false} />
             <XAxis dataKey="label" tick={{ fontSize: 10, fill: 'rgba(255,255,255,0.3)' }} tickLine={false} axisLine={false} />
-            <YAxis tick={{ fontSize: 10, fill: 'rgba(255,255,255,0.3)' }} tickLine={false} axisLine={false} tickFormatter={(v) => `€${(v / 1000).toFixed(0)}k`} />
+            <YAxis tick={{ fontSize: 10, fill: 'rgba(255,255,255,0.3)' }} tickLine={false} axisLine={false} tickFormatter={(v) => `$${(v / 1000).toFixed(0)}k`} />
             <Tooltip
               contentStyle={{ background: '#1a1e2b', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 12, fontSize: 12, color: '#fff' }}
-              formatter={(v: unknown, name: unknown) => [`€${Number(v).toLocaleString()}`, name === 'revenue' ? 'Current' : 'Previous']}
+              formatter={(v: unknown, name: unknown) => [`$${Number(v).toLocaleString()}`, name === 'revenue' ? 'Current' : 'Previous']}
             />
             <Area type="monotone" dataKey="prev"    stroke="#f87171" strokeWidth={1.5} fill="url(#gPrev)" dot={false} />
             <Area type="monotone" dataKey="revenue" stroke="#4ade80" strokeWidth={2}   fill="url(#gCur)"  dot={false} />

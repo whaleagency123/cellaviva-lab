@@ -195,7 +195,7 @@ export function ConversionColumn({ product }: ConversionColumnProps) {
       {/* Trust badges */}
       <div className="grid grid-cols-3 gap-3 pt-2">
         {[
-          { icon: Truck, label: 'Free Shipping €50+' },
+          { icon: Truck, label: 'Free Shipping $50+' },
           { icon: Shield, label: '30-Day Guarantee' },
           { icon: RotateCcw, label: 'Easy Refunds' },
         ].map(({ icon: Icon, label }) => (

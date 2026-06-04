@@ -111,11 +111,11 @@ export default async function ProductsPage({
                     )}
                     <div className="flex items-center gap-3">
                       {product.salePrice && (
-                        <span className="text-2xl font-black text-gray-400">€{product.salePrice}</span>
+                        <span className="text-2xl font-black text-gray-400">${product.salePrice}</span>
                       )}
                       {product.price && (
                         <span className={`font-semibold ${product.salePrice ? 'text-sm text-gray-400 line-through' : 'text-2xl font-black text-gray-400'}`}>
-                          €{product.price}
+                          ${product.price}
                         </span>
                       )}
                     </div>

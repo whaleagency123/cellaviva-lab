@@ -179,7 +179,7 @@ export default function ReturnsPage() {
 
   const kpis = [
     { label: 'Open Returns',    value: openReturns,           icon: Clock,         accent: '#f59e0b' },
-    { label: 'Refunded (Month)',value: `€${totalRefunded}`,   icon: DollarSign,    accent: '#f87171' },
+    { label: 'Refunded (Month)',value: `$${totalRefunded}`,   icon: DollarSign,    accent: '#f87171' },
     { label: 'Return Rate',     value: returnRate,             icon: TrendingDown,  accent: '#a78bfa' },
     { label: 'Pending Review',  value: counts.REQUESTED,       icon: AlertTriangle, accent: '#60a5fa' },
   ]
@@ -257,7 +257,7 @@ export default function ReturnsPage() {
                       {STATUS_LABEL[r.status]}
                     </span>
                   </td>
-                  <td className="px-5 py-3.5 font-bold text-white text-xs">€{r.refundAmount}</td>
+                  <td className="px-5 py-3.5 font-bold text-white text-xs">${r.refundAmount}</td>
                   <td className="px-5 py-3.5"><ChevronRight className="w-4 h-4 text-white/20" /></td>
                 </tr>
               ))}
@@ -301,7 +301,7 @@ export default function ReturnsPage() {
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-white/40">Refund Amount</span>
-                  <span className="font-bold text-white">€{selected.refundAmount}</span>
+                  <span className="font-bold text-white">${selected.refundAmount}</span>
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-white/40">Refund Method</span>
@@ -366,7 +366,7 @@ export default function ReturnsPage() {
                 )}
                 {selected.status === 'ITEM_RECEIVED' && (
                   <button onClick={() => advanceStatus(selected.id, 'REFUNDED')} className="w-full flex items-center justify-center gap-2 bg-[#4ade80]/15 hover:bg-[#4ade80]/25 border border-[#4ade80]/20 text-[#4ade80] font-semibold py-2.5 rounded-xl text-sm transition-colors">
-                    <ArrowDownLeft className="w-4 h-4" /> Process Refund €{selected.refundAmount}
+                    <ArrowDownLeft className="w-4 h-4" /> Process Refund ${selected.refundAmount}
                   </button>
                 )}
 

@@ -13,7 +13,7 @@ export default function TermsPage() {
     },
     {
       title: '2. Products and Pricing',
-      body: `All prices are displayed in Euros (€) and include applicable VAT. We reserve the right to change prices at any time without notice. Product descriptions and images are for informational purposes; we make every effort to display colours accurately but cannot guarantee exact colour match on your screen.`,
+      body: `All prices are displayed in Euros ($) and include applicable VAT. We reserve the right to change prices at any time without notice. Product descriptions and images are for informational purposes; we make every effort to display colours accurately but cannot guarantee exact colour match on your screen.`,
     },
     {
       title: '3. Orders and Payment',
@@ -21,7 +21,7 @@ export default function TermsPage() {
     },
     {
       title: '4. Shipping and Delivery',
-      body: `We ship worldwide. Standard delivery within Ireland and the EU takes 3–5 business days. International orders may take 5–10 business days. Free shipping is available on orders over €50. We are not responsible for delays caused by customs or third-party carriers.`,
+      body: `We ship worldwide. Standard delivery within Ireland and the EU takes 3–5 business days. International orders may take 5–10 business days. Free shipping is available on orders over $50. We are not responsible for delays caused by customs or third-party carriers.`,
     },
     {
       title: '5. Returns and Refunds',

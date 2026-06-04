@@ -28,7 +28,7 @@ const getCustomSections = unstable_cache(
 
 export const metadata: Metadata = {
   title: 'CELLAVIVA — Plant-Based Hair Care | Clinically Proven Results',
-  description: 'Powered by nature, backed by science. Stemuvita™ plant-based hair care reduces shedding by 91% in 8 weeks. Free shipping on orders over €50.',
+  description: 'Powered by nature, backed by science. Stemuvita™ plant-based hair care reduces shedding by 91% in 8 weeks. Free shipping on orders over $50.',
   openGraph: {
     title: 'CELLAVIVA — Plant-Based Hair Care',
     description: 'Clinically proven plant-based hair care. Reduces shedding by 91% in 8 weeks.',

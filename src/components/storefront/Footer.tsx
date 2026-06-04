@@ -45,7 +45,7 @@ export function Footer({ settings = DEFAULT_SETTINGS }: FooterProps) {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-wrap items-center justify-center gap-6 sm:gap-12">
           {[
             { icon: '🔒', text: 'Secure Checkout', sub: 'SSL encrypted' },
-            { icon: '🚚', text: 'Free Shipping', sub: 'On orders €50+' },
+            { icon: '🚚', text: 'Free Shipping', sub: 'On orders $50+' },
             { icon: '↩️', text: '30-Day Guarantee', sub: 'No questions asked' },
             { icon: '🌿', text: '100% Plant-Based', sub: 'No nasty chemicals' },
           ].map((t) => (
