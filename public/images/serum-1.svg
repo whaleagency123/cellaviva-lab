@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="800" viewBox="0 0 800 800">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#E7EFE4"/>
+      <stop offset="100%" style="stop-color:#D8F3DC"/>
+    </linearGradient>
+    <linearGradient id="bottle" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1B4332"/>
+      <stop offset="100%" style="stop-color:#142718"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="800" fill="url(#bg)"/>
+  <!-- Dropper bottle body -->
+  <rect x="340" y="250" width="120" height="300" rx="20" fill="url(#bottle)"/>
+  <!-- Dropper neck -->
+  <rect x="375" y="180" width="50" height="80" rx="8" fill="#2E5B41"/>
+  <!-- Dropper bulb -->
+  <ellipse cx="400" cy="160" rx="30" ry="25" fill="#98CBB0"/>
+  <!-- Label -->
+  <rect x="350" y="290" width="100" height="150" rx="6" fill="white" opacity="0.9"/>
+  <!-- Label text -->
+  <text x="400" y="325" font-family="Georgia, serif" font-size="12" fill="#142718" text-anchor="middle" font-weight="bold">Stemuvita™</text>
+  <text x="400" y="345" font-family="Arial, sans-serif" font-size="9" fill="#2E5B41" text-anchor="middle">SCALP SERUM</text>
+  <line x1="358" y1="358" x2="442" y2="358" stroke="#D8F3DC" stroke-width="1"/>
+  <text x="400" y="378" font-family="Arial, sans-serif" font-size="8" fill="#52796F" text-anchor="middle">Plant Stem Cells</text>
+  <text x="400" y="395" font-family="Arial, sans-serif" font-size="8" fill="#52796F" text-anchor="middle">50ml · Leave-In</text>
+  <!-- Shadow -->
+  <ellipse cx="400" cy="620" rx="50" ry="12" fill="#2E5B41" opacity="0.15"/>
+</svg>

@@ -1,0 +1,245 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Product {
+  id          String      @id @default(cuid())
+  slug        String      @unique
+  title       String
+  description String
+  price       Float
+  salePrice   Float?
+  stock       Int         @default(0)
+  images      String[]
+  featured    Boolean     @default(false)
+  active      Boolean     @default(true)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  orderItems    OrderItem[]
+  subscriptions Subscription[]
+}
+
+model Order {
+  id              String            @id @default(cuid())
+  customerName    String
+  customerEmail   String
+  customerPhone   String?
+  shippingAddress Json
+  lineItems       OrderItem[]
+  status          FulfillmentStatus @default(PENDING)
+  paymentStatus   PaymentStatus     @default(PENDING)
+  stripePaymentId String?
+  discountCode    String?
+  discountAmount  Float?            @default(0)
+  total           Float
+  source          OrderSource       @default(STOREFRONT)
+  notes           String?
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+}
+
+model OrderItem {
+  id        String  @id @default(cuid())
+  orderId   String
+  productId String
+  quantity  Int
+  price     Float
+  order     Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product   Product @relation(fields: [productId], references: [id])
+}
+
+model StoreSettings {
+  id    String @id @default(cuid())
+  key   String @unique
+  value String
+
+  @@map("store_settings")
+}
+
+model ContactInquiry {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  phone     String?
+  message   String
+  createdAt DateTime @default(now())
+}
+
+model Review {
+  id          String   @id @default(cuid())
+  productSlug String
+  authorName  String
+  authorEmail String
+  rating      Int
+  title       String
+  body        String
+  verified    Boolean  @default(false)
+  approved    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+
+  @@index([productSlug])
+}
+
+model DiscountCode {
+  id         String       @id @default(cuid())
+  code       String       @unique
+  type       DiscountType
+  value      Float
+  minOrder   Float?
+  usageLimit Int?
+  usedCount  Int          @default(0)
+  expiresAt  DateTime?
+  active     Boolean      @default(true)
+  createdAt  DateTime     @default(now())
+}
+
+model Wishlist {
+  id          String   @id @default(cuid())
+  userId      String
+  productSlug String
+  createdAt   DateTime @default(now())
+
+  @@unique([userId, productSlug])
+  @@index([userId])
+}
+
+// ── Storefront customers (synced from NextAuth on first login) ────────────────
+model Customer {
+  id             String    @id @default(cuid())
+  email          String    @unique
+  name           String?
+  image          String?
+  provider       String?   // "google" | "facebook" | "credentials"
+  providerId     String?   // OAuth sub/id
+  phone          String?
+  hashedPassword String?   // only set for credential (email+password) logins
+  totalOrders    Int       @default(0)
+  totalSpent     Float     @default(0)
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  subscriptions Subscription[]
+  wishlistItems CustomerWishlist[]
+
+  @@index([email])
+  @@map("customers")
+}
+
+// ── Subscriptions (Stripe recurring orders) ──────────────────────────────────
+model Subscription {
+  id                   String             @id @default(cuid())
+  customerId           String
+  customer             Customer           @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  stripeSubscriptionId String?            @unique
+  stripeCustomerId     String?
+  productId            String
+  product              Product            @relation(fields: [productId], references: [id])
+  status               SubscriptionStatus @default(ACTIVE)
+  pricePerCycle        Float
+  intervalDays         Int                @default(30)
+  nextBillingAt        DateTime?
+  cancelledAt          DateTime?
+  createdAt            DateTime           @default(now())
+  updatedAt            DateTime           @updatedAt
+
+  @@index([customerId])
+  @@index([stripeSubscriptionId])
+  @@map("subscriptions")
+}
+
+// ── Customer wishlist (replaces old Wishlist after customer migration) ─────────
+model CustomerWishlist {
+  id          String   @id @default(cuid())
+  customerId  String
+  customer    Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  productSlug String
+  createdAt   DateTime @default(now())
+
+  @@unique([customerId, productSlug])
+  @@map("customer_wishlists")
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  PAUSED
+  CANCELLED
+  PAST_DUE
+  TRIALING
+}
+
+model AdminUser {
+  id          String   @id @default(cuid())
+  username    String   @unique
+  email       String   @unique
+  passwordHash String
+  role        String   @default("admin")
+  permissions String   @default("[]") // JSON array of permission keys
+  createdAt   DateTime @default(now())
+
+  @@map("admin_users")
+}
+
+model VerificationCode {
+  token     String   @id
+  code      String
+  email     String
+  username  String
+  expiresAt DateTime
+
+  @@map("verification_codes")
+}
+
+model RateLimit {
+  key       String   @id
+  count     Int      @default(1)
+  resetAt   DateTime
+
+  @@map("rate_limits")
+}
+
+model BlogPost {
+  id         String   @id @default(cuid())
+  slug       String   @unique
+  title      String
+  excerpt    String
+  body       String
+  coverEmoji String   @default("🌿")
+  category   String   @default("Hair Care")
+  published  Boolean  @default(true)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+enum FulfillmentStatus {
+  PENDING
+  PROCESSING
+  SHIPPED
+  DELIVERED
+  CANCELLED
+}
+
+enum PaymentStatus {
+  PENDING
+  AUTHORIZED
+  PAID
+  REFUNDED
+  FAILED
+}
+
+enum DiscountType {
+  PERCENTAGE
+  FIXED
+}
+
+enum OrderSource {
+  STOREFRONT
+  WHATSAPP
+  FACEBOOK
+  INSTAGRAM
+  TIKTOK
+  DIRECT
+}
