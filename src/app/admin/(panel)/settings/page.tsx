@@ -741,6 +741,23 @@ export default function AdminCMSPage() {
               </div>
 
               <div className={CARD}>
+                <h2 className="text-white font-bold mb-4">Checkout Options</h2>
+                <div className="flex items-center justify-between p-4 rounded-xl border border-white/8 bg-white/3">
+                  <div>
+                    <p className="text-sm font-semibold text-white">Show Country Field</p>
+                    <p className="text-xs text-white/40 mt-0.5">Display the country dropdown in the checkout address form</p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => upd('checkoutShowCountry' as any, (settings as any).checkoutShowCountry === 'false' ? 'true' : 'false')}
+                    className={`relative w-11 h-6 rounded-full transition-colors flex-shrink-0 ${(settings as any).checkoutShowCountry !== 'false' ? 'bg-[#4ade80]' : 'bg-white/15'}`}
+                  >
+                    <span className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform ${(settings as any).checkoutShowCountry !== 'false' ? 'translate-x-5' : 'translate-x-0'}`} />
+                  </button>
+                </div>
+              </div>
+
+              <div className={CARD}>
                 <h2 className="text-white font-bold mb-5">Social Media Links</h2>
                 <div className="space-y-4">
                   {([

@@ -31,16 +31,75 @@ interface ContactForm {
 
 const INITIAL_FORM: ContactForm = {
   firstName: '', lastName: '', email: '', phone: '',
-  address: '', city: '', country: 'IE', postalCode: '',
+  address: '', city: '', country: 'LB', postalCode: '',
 }
 
 const COUNTRIES = [
-  { code: 'IE', name: 'Ireland' }, { code: 'GB', name: 'United Kingdom' },
-  { code: 'DE', name: 'Germany' }, { code: 'FR', name: 'France' },
-  { code: 'NL', name: 'Netherlands' }, { code: 'BE', name: 'Belgium' },
-  { code: 'ES', name: 'Spain' }, { code: 'IT', name: 'Italy' },
-  { code: 'US', name: 'United States' }, { code: 'CA', name: 'Canada' },
-  { code: 'AU', name: 'Australia' },
+  // Lebanon first (default)
+  { code: 'LB', name: '🇱🇧 Lebanon' },
+  // Arab countries
+  { code: 'SA', name: '🇸🇦 Saudi Arabia' },
+  { code: 'AE', name: '🇦🇪 United Arab Emirates' },
+  { code: 'KW', name: '🇰🇼 Kuwait' },
+  { code: 'QA', name: '🇶🇦 Qatar' },
+  { code: 'BH', name: '🇧🇭 Bahrain' },
+  { code: 'OM', name: '🇴🇲 Oman' },
+  { code: 'JO', name: '🇯🇴 Jordan' },
+  { code: 'EG', name: '🇪🇬 Egypt' },
+  { code: 'IQ', name: '🇮🇶 Iraq' },
+  { code: 'SY', name: '🇸🇾 Syria' },
+  { code: 'PS', name: '🇵🇸 Palestine' },
+  { code: 'MA', name: '🇲🇦 Morocco' },
+  { code: 'TN', name: '🇹🇳 Tunisia' },
+  { code: 'DZ', name: '🇩🇿 Algeria' },
+  { code: 'LY', name: '🇱🇾 Libya' },
+  { code: 'SD', name: '🇸🇩 Sudan' },
+  { code: 'YE', name: '🇾🇪 Yemen' },
+  // Europe
+  { code: 'IE', name: '🇮🇪 Ireland' },
+  { code: 'GB', name: '🇬🇧 United Kingdom' },
+  { code: 'DE', name: '🇩🇪 Germany' },
+  { code: 'FR', name: '🇫🇷 France' },
+  { code: 'NL', name: '🇳🇱 Netherlands' },
+  { code: 'BE', name: '🇧🇪 Belgium' },
+  { code: 'ES', name: '🇪🇸 Spain' },
+  { code: 'IT', name: '🇮🇹 Italy' },
+  { code: 'PT', name: '🇵🇹 Portugal' },
+  { code: 'SE', name: '🇸🇪 Sweden' },
+  { code: 'NO', name: '🇳🇴 Norway' },
+  { code: 'DK', name: '🇩🇰 Denmark' },
+  { code: 'FI', name: '🇫🇮 Finland' },
+  { code: 'CH', name: '🇨🇭 Switzerland' },
+  { code: 'AT', name: '🇦🇹 Austria' },
+  { code: 'PL', name: '🇵🇱 Poland' },
+  { code: 'CZ', name: '🇨🇿 Czech Republic' },
+  { code: 'HU', name: '🇭🇺 Hungary' },
+  { code: 'RO', name: '🇷🇴 Romania' },
+  { code: 'GR', name: '🇬🇷 Greece' },
+  { code: 'TR', name: '🇹🇷 Turkey' },
+  { code: 'CY', name: '🇨🇾 Cyprus' },
+  // Americas
+  { code: 'US', name: '🇺🇸 United States' },
+  { code: 'CA', name: '🇨🇦 Canada' },
+  { code: 'MX', name: '🇲🇽 Mexico' },
+  { code: 'BR', name: '🇧🇷 Brazil' },
+  { code: 'AR', name: '🇦🇷 Argentina' },
+  // Asia-Pacific
+  { code: 'AU', name: '🇦🇺 Australia' },
+  { code: 'NZ', name: '🇳🇿 New Zealand' },
+  { code: 'IN', name: '🇮🇳 India' },
+  { code: 'PK', name: '🇵🇰 Pakistan' },
+  { code: 'SG', name: '🇸🇬 Singapore' },
+  { code: 'MY', name: '🇲🇾 Malaysia' },
+  { code: 'JP', name: '🇯🇵 Japan' },
+  { code: 'KR', name: '🇰🇷 South Korea' },
+  { code: 'CN', name: '🇨🇳 China' },
+  // Africa
+  { code: 'ZA', name: '🇿🇦 South Africa' },
+  { code: 'NG', name: '🇳🇬 Nigeria' },
+  { code: 'KE', name: '🇰🇪 Kenya' },
+  { code: 'GH', name: '🇬🇭 Ghana' },
+  { code: 'SN', name: '🇸🇳 Senegal' },
 ]
 
 const INPUT = 'w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#3a79a9]/40 transition-shadow'
@@ -186,13 +245,17 @@ export default function CheckoutPage() {
   // Payment method
   const [paymentMethod, setPaymentMethod] = useState<'card' | 'whish' | 'cod'>('card')
   const [whatsappNumber, setWhatsappNumber] = useState('')
+  const [showCountry, setShowCountry] = useState(true)
   const [manualOrderDone, setManualOrderDone] = useState(false)
   const [manualOrderData, setManualOrderData] = useState<any>(null)
 
   useEffect(() => {
     fetch('/api/settings')
       .then(r => r.json())
-      .then((d: any) => { if (d.storeWhatsapp) setWhatsappNumber(d.storeWhatsapp) })
+      .then((d: any) => {
+        if (d.storeWhatsapp) setWhatsappNumber(d.storeWhatsapp)
+        if (d.checkoutShowCountry === 'false') setShowCountry(false)
+      })
       .catch(() => {})
   }, [])
 
@@ -470,14 +533,16 @@ export default function CheckoutPage() {
                         <input required value={form.postalCode} onChange={(e) => setField('postalCode', e.target.value)} className={INPUT} placeholder="D01 A1B2" />
                       </div>
                     </div>
-                    <div>
-                      <label className={LABEL}>Country <span className="text-red-400">*</span></label>
-                      <select required value={form.country} onChange={(e) => setField('country', e.target.value)} className={INPUT}>
-                        {COUNTRIES.map((c) => (
-                          <option key={c.code} value={c.code}>{c.name}</option>
-                        ))}
-                      </select>
-                    </div>
+                    {showCountry && (
+                      <div>
+                        <label className={LABEL}>Country <span className="text-red-400">*</span></label>
+                        <select required value={form.country} onChange={(e) => setField('country', e.target.value)} className={INPUT}>
+                          {COUNTRIES.map((c) => (
+                            <option key={c.code} value={c.code}>{c.name}</option>
+                          ))}
+                        </select>
+                      </div>
+                    )}
                   </div>
                 </div>
 

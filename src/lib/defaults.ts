@@ -345,8 +345,9 @@ export const DEFAULT_SETTINGS: StoreSettings = {
   storeEmail: 'hello@cellaviva.com',
   storePhone: '+353 1 234 5678',
   storeWhatsapp: '',
-  storeVat: 'IE3456789A',
-  storeAddress: 'Dublin, Ireland',       // WhatsApp number for order notifications (e.g. 96170000000)
+  storeVat: '',
+  storeAddress: 'Beirut, Lebanon',
+  checkoutShowCountry: 'true',
   socialInstagram: 'https://instagram.com/cellaviva',
   socialFacebook: 'https://facebook.com/cellaviva',
   socialTikTok: 'https://tiktok.com/@cellaviva',

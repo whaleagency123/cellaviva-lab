@@ -265,6 +265,7 @@ export interface StoreSettings {
   storeWhatsapp: string
   storeVat: string
   storeAddress: string
+  checkoutShowCountry: string
   socialInstagram: string
   socialFacebook: string
   socialTikTok: string
