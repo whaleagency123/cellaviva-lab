@@ -6,9 +6,6 @@
 const REQUIRED_VARS = [
   'DATABASE_URL',
   'NEXTAUTH_SECRET',
-  'STRIPE_SECRET_KEY',
-  'STRIPE_WEBHOOK_SECRET',
-  'NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY',
 ] as const
 
 export function validateEnv() {
