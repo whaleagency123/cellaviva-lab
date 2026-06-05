@@ -49,10 +49,12 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: [
-      { url: '/images/logo-square.png', type: 'image/png' },
+      { url: '/favicon.png', sizes: '512x512', type: 'image/png' },
+      { url: '/favicon.png', sizes: '32x32',  type: 'image/png' },
+      { url: '/favicon.png', sizes: '16x16',  type: 'image/png' },
     ],
-    apple: '/images/logo-square.png',
-    shortcut: '/images/logo-square.png',
+    shortcut: '/favicon.png',
+    apple:    '/favicon.png',
   },
   manifest: '/manifest.webmanifest',
   appleWebApp: {
