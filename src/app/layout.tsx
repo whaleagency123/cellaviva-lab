@@ -47,6 +47,13 @@ export const metadata: Metadata = {
     follow: true,
     googleBot: { index: true, follow: true, 'max-image-preview': 'large' },
   },
+  icons: {
+    icon: [
+      { url: '/images/logo-square.png', type: 'image/png' },
+    ],
+    apple: '/images/logo-square.png',
+    shortcut: '/images/logo-square.png',
+  },
   manifest: '/manifest.webmanifest',
   appleWebApp: {
     capable: true,
