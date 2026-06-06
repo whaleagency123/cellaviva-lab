@@ -68,7 +68,7 @@ export function Footer({ settings = DEFAULT_SETTINGS }: FooterProps) {
               className="text-2xl font-bold text-white"
               style={{ fontFamily: 'var(--sf-font-display)' }}
             >
-              CELLA<span className="text-[var(--sf-primary)]">VIVA</span>
+              CELLA<span className="text-[var(--sf-primary)]">VIVA LAB</span>
             </span>
             <p className="mt-3 text-sm text-gray-500 leading-relaxed max-w-xs">
               {settings.storeTagline}
@@ -226,7 +226,7 @@ export function Footer({ settings = DEFAULT_SETTINGS }: FooterProps) {
         {/* Bottom bar */}
         <div className="mt-12 pt-8 border-t border-white/8 flex flex-col sm:flex-row items-center justify-between gap-4">
           <p className="text-xs text-gray-600">
-            {settings.copyrightText || `© ${new Date().getFullYear()} CELLAVIVA. All rights reserved.`}
+            {settings.copyrightText || `© ${new Date().getFullYear()} CELLAVIVA LAB. All rights reserved.`}
           </p>
           <div className="flex items-center gap-2 flex-wrap justify-center">
             {['Visa', 'Mastercard', 'Amex', 'PayPal', 'Apple Pay', 'Google Pay', 'Klarna'].map((p) => (
