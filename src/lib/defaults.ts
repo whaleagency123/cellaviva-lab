@@ -353,7 +353,7 @@ export const DEFAULT_SETTINGS: StoreSettings = {
   socialTikTok: 'https://tiktok.com/@cellaviva',
   socialTwitter: '',
   footerTagline: 'Powered by nature, backed by science.',
-  copyrightText: '© 2026 CELLAVIVA. All rights reserved. Registered in Ireland.',
+  copyrightText: '© 2026 CELLAVIVA LAB. All rights reserved. Registered in Ireland.',
 
   // ── Before/After drag slider ─────────────────────────────────────────────
   sliderTitle: 'See The Difference',
