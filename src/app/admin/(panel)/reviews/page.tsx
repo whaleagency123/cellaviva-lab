@@ -61,7 +61,10 @@ export default function ReviewsPage() {
     setLoading(true)
     try {
       const res = await fetch('/api/admin/reviews')
-      if (res.ok) setReviews(await res.json())
+      if (res.ok) {
+        const data = await res.json()
+        setReviews(data.reviews ?? [])
+      }
     } finally {
       setLoading(false)
     }
