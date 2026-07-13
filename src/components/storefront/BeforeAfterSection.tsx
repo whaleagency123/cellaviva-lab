@@ -18,7 +18,8 @@ export function BeforeAfterSection({ cases = DEFAULT_SETTINGS.beforeAfterCases }
   const { locale } = useLanguage()
   const ar = locale === 'ar'
   const [active, setActive] = useState(0)
-  const c = cases[active] ?? cases[0]
+  const safeCases = cases.length > 0 ? cases : DEFAULT_SETTINGS.beforeAfterCases
+  const c = safeCases[active] ?? safeCases[0]
 
   return (
     <section className="py-24 bg-[var(--sf-bg)]">
@@ -38,7 +39,7 @@ export function BeforeAfterSection({ cases = DEFAULT_SETTINGS.beforeAfterCases }
 
         {/* Case selector */}
         <div className="flex justify-center gap-3 mb-10 flex-wrap">
-          {cases.map((cs, i) => (
+          {safeCases.map((cs, i) => (
             <button
               key={cs.id}
               onClick={() => setActive(i)}
