@@ -56,46 +56,54 @@ export function BeforeAfterSection({ cases = DEFAULT_SETTINGS.beforeAfterCases }
             <div className="grid grid-cols-2 gap-4">
               {/* Before */}
               <div className="group relative overflow-hidden rounded-[var(--sf-radius-card)] aspect-square">
-                <div className={`absolute inset-0 bg-gradient-to-br ${BG_BEFORE[active % BG_BEFORE.length]} flex items-end justify-center pb-6`}>
-                  <div className="text-center">
-                    <div className="text-5xl mb-3">🪮</div>
-                    <div className="flex gap-1 justify-center mb-1">
-                      {Array.from({ length: 6 }).map((_, i) => (
-                        <div key={i} className="w-0.5 h-6 bg-amber-400/60 rounded-full" />
-                      ))}
-                    </div>
-                    <div className="flex gap-1 justify-center">
-                      {Array.from({ length: 4 }).map((_, i) => (
-                        <div key={i} className="w-0.5 h-4 bg-amber-400/40 rounded-full" />
-                      ))}
+                {c.beforeImage ? (
+                  <img src={c.beforeImage} alt={c.beforeLabel} className="absolute inset-0 w-full h-full object-cover" />
+                ) : (
+                  <div className={`absolute inset-0 bg-gradient-to-br ${BG_BEFORE[active % BG_BEFORE.length]} flex items-end justify-center pb-6`}>
+                    <div className="text-center">
+                      <div className="text-5xl mb-3">🪮</div>
+                      <div className="flex gap-1 justify-center mb-1">
+                        {Array.from({ length: 6 }).map((_, i) => (
+                          <div key={i} className="w-0.5 h-6 bg-amber-400/60 rounded-full" />
+                        ))}
+                      </div>
+                      <div className="flex gap-1 justify-center">
+                        {Array.from({ length: 4 }).map((_, i) => (
+                          <div key={i} className="w-0.5 h-4 bg-amber-400/40 rounded-full" />
+                        ))}
+                      </div>
                     </div>
                   </div>
-                </div>
+                )}
                 <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm rounded-full px-3 py-1 text-xs font-bold text-[var(--sf-text)]">
                   {c.beforeLabel}
                 </div>
                 <div className="absolute bottom-4 right-4 bg-red-100 rounded-full px-2.5 py-1 text-xs font-semibold text-red-600">
-                  High Shedding
+                  {c.concern.split(' ').slice(0, 2).join(' ')}
                 </div>
               </div>
 
               {/* After */}
               <div className="group relative overflow-hidden rounded-[var(--sf-radius-card)] aspect-square">
-                <div className={`absolute inset-0 bg-gradient-to-br ${BG_AFTER[active % BG_AFTER.length]} flex items-end justify-center pb-6`}>
-                  <div className="text-center">
-                    <div className="text-5xl mb-3">✨</div>
-                    <div className="flex gap-0.5 justify-center mb-1">
-                      {Array.from({ length: 12 }).map((_, i) => (
-                        <div key={i} className="w-0.5 h-8 bg-[#266396]/50 rounded-full" />
-                      ))}
-                    </div>
-                    <div className="flex gap-0.5 justify-center">
-                      {Array.from({ length: 10 }).map((_, i) => (
-                        <div key={i} className="w-0.5 h-6 bg-[#266396]/35 rounded-full" />
-                      ))}
+                {c.afterImage ? (
+                  <img src={c.afterImage} alt={c.afterLabel} className="absolute inset-0 w-full h-full object-cover" />
+                ) : (
+                  <div className={`absolute inset-0 bg-gradient-to-br ${BG_AFTER[active % BG_AFTER.length]} flex items-end justify-center pb-6`}>
+                    <div className="text-center">
+                      <div className="text-5xl mb-3">✨</div>
+                      <div className="flex gap-0.5 justify-center mb-1">
+                        {Array.from({ length: 12 }).map((_, i) => (
+                          <div key={i} className="w-0.5 h-8 bg-[#266396]/50 rounded-full" />
+                        ))}
+                      </div>
+                      <div className="flex gap-0.5 justify-center">
+                        {Array.from({ length: 10 }).map((_, i) => (
+                          <div key={i} className="w-0.5 h-6 bg-[#266396]/35 rounded-full" />
+                        ))}
+                      </div>
                     </div>
                   </div>
-                </div>
+                )}
                 <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm rounded-full px-3 py-1 text-xs font-bold text-[var(--sf-text)]">
                   {c.afterLabel}
                 </div>

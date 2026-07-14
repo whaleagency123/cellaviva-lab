@@ -42,42 +42,6 @@ interface Address {
   isDefault: boolean
 }
 
-const MOCK_ORDERS: Order[] = [
-  {
-    id: 'ORD-1091',
-    date: '24 May 2026',
-    status: 'PROCESSING',
-    total: 49,
-    items: [{ name: 'Stemuvita™ Hair Cleanse', qty: 1, price: 49, img: '🌿' }],
-  },
-  {
-    id: 'ORD-1054',
-    date: '10 Apr 2026',
-    status: 'DELIVERED',
-    total: 91,
-    items: [
-      { name: 'Stemuvita™ Hair Cleanse', qty: 1, price: 49, img: '🌿' },
-      { name: 'Stemuvita™ Scalp Serum', qty: 1, price: 42, img: '💧' },
-    ],
-    tracking: 'DHL-5391842009',
-  },
-  {
-    id: 'ORD-1031',
-    date: '1 Mar 2026',
-    status: 'DELIVERED',
-    total: 49,
-    items: [{ name: 'Stemuvita™ Hair Cleanse', qty: 1, price: 49, img: '🌿' }],
-    tracking: 'DHL-5391722811',
-  },
-  {
-    id: 'ORD-0988',
-    date: '22 Dec 2025',
-    status: 'DELIVERED',
-    total: 49,
-    items: [{ name: 'Stemuvita™ Hair Cleanse', qty: 1, price: 49, img: '🌿' }],
-  },
-]
-
 const MOCK_SUBSCRIPTIONS: Subscription[] = [
   {
     id: 'sub_001',
@@ -114,17 +78,21 @@ const MOCK_ADDRESSES: Address[] = [
 ]
 
 const STATUS_BADGE: Record<string, string> = {
+  PENDING:    'bg-yellow-100 text-yellow-700',
   PROCESSING: 'bg-blue-100 text-blue-700',
-  SHIPPED: 'bg-purple-100 text-purple-700',
-  DELIVERED: 'bg-emerald-100 text-emerald-700',
-  REFUNDED: 'bg-red-100 text-red-600',
+  SHIPPED:    'bg-purple-100 text-purple-700',
+  DELIVERED:  'bg-emerald-100 text-emerald-700',
+  CANCELLED:  'bg-red-100 text-red-600',
+  REFUNDED:   'bg-red-100 text-red-600',
 }
 
 const STATUS_ICON: Record<string, React.ElementType> = {
+  PENDING:    Clock,
   PROCESSING: Clock,
-  SHIPPED: Truck,
-  DELIVERED: CheckCircle,
-  REFUNDED: RefreshCw,
+  SHIPPED:    Truck,
+  DELIVERED:  CheckCircle,
+  CANCELLED:  RefreshCw,
+  REFUNDED:   RefreshCw,
 }
 
 const SUB_BADGE: Record<string, string> = {
@@ -161,29 +129,27 @@ export default function AccountPage() {
   const [subscriptions, setSubscriptions] = useState(MOCK_SUBSCRIPTIONS)
   const [addresses, setAddresses] = useState(MOCK_ADDRESSES)
 
-  // Real orders from DB (starts with mock data as fallback, replaced by real data on load)
-  const [orders, setOrders] = useState<Order[]>(MOCK_ORDERS)
-  const [ordersLoading, setOrdersLoading] = useState(false)
+  // Real orders from DB — new accounts start empty until they place an order.
+  const [orders, setOrders] = useState<Order[]>([])
+  const [ordersLoading, setOrdersLoading] = useState(true)
   useEffect(() => {
     if (!email) return
     setOrdersLoading(true)
     fetch('/api/orders')
       .then(r => r.json())
       .then((data: { orders?: { id: string; total: number; status: string; createdAt: string; lineItems: { quantity: number; price: number; product: { title: string } | null }[] }[] }) => {
-        if (data.orders && data.orders.length > 0) {
-          setOrders(data.orders.map(o => ({
-            id: o.id.slice(0, 10).toUpperCase(),
-            date: new Date(o.createdAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }),
-            status: o.status as Order['status'],
-            total: o.total,
-            items: o.lineItems.map(li => ({
-              name:  li.product?.title ?? 'Product',
-              qty:   li.quantity,
-              price: li.price,
-              img:   '🌿',
-            })),
-          })))
-        }
+        setOrders((data.orders ?? []).map(o => ({
+          id: o.id.slice(0, 10).toUpperCase(),
+          date: new Date(o.createdAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }),
+          status: o.status as Order['status'],
+          total: o.total,
+          items: o.lineItems.map(li => ({
+            name:  li.product?.title ?? 'Product',
+            qty:   li.quantity,
+            price: li.price,
+            img:   '🌿',
+          })),
+        })))
       })
       .catch(() => {})
       .finally(() => setOrdersLoading(false))
@@ -332,11 +298,26 @@ export default function AccountPage() {
                 <div className="bg-white rounded-3xl border border-gray-100 shadow-sm p-6">
                   <div className="flex items-center justify-between mb-5">
                     <h3 className="font-bold text-gray-900">Latest Order</h3>
-                    <button onClick={() => setTab('orders')} className="text-sm text-[#2d6a4f] hover:underline font-medium">
-                      View all →
-                    </button>
+                    {orders.length > 0 && (
+                      <button onClick={() => setTab('orders')} className="text-sm text-[#2d6a4f] hover:underline font-medium">
+                        View all →
+                      </button>
+                    )}
                   </div>
-                  {(() => {
+                  {ordersLoading ? (
+                    <div className="flex items-center justify-center py-6">
+                      <Loader2 className="w-5 h-5 animate-spin text-[#52b788]" />
+                    </div>
+                  ) : orders.length === 0 ? (
+                    <div className="text-center py-6">
+                      <p className="text-3xl mb-3">🌿</p>
+                      <p className="font-bold text-gray-900 mb-1">No orders yet</p>
+                      <p className="text-gray-400 text-sm mb-4">Your orders will show up here once you place one.</p>
+                      <Link href="/shop" className="inline-block bg-[var(--sf-primary)] text-white px-5 py-2 rounded-full text-sm font-semibold hover:bg-[var(--sf-primary-dark)] transition-colors">
+                        Start Shopping
+                      </Link>
+                    </div>
+                  ) : (() => {
                     const o = orders[0]
                     const SI = STATUS_ICON[o.status]
                     return (
@@ -420,6 +401,20 @@ export default function AccountPage() {
                   <h2 className="font-bold text-gray-900 text-lg">Order History</h2>
                   <p className="text-sm text-gray-400 mt-0.5">{orders.length} orders placed</p>
                 </div>
+                {ordersLoading ? (
+                  <div className="flex items-center justify-center py-16">
+                    <Loader2 className="w-6 h-6 animate-spin text-[#52b788]" />
+                  </div>
+                ) : orders.length === 0 ? (
+                  <div className="p-12 text-center">
+                    <p className="text-4xl mb-4">🌿</p>
+                    <p className="font-bold text-gray-900 mb-1">No orders yet</p>
+                    <p className="text-gray-400 text-sm mb-5">When you place an order, it'll show up here.</p>
+                    <Link href="/shop" className="inline-block bg-[var(--sf-primary)] text-white px-6 py-2.5 rounded-full text-sm font-semibold hover:bg-[var(--sf-primary-dark)] transition-colors">
+                      Start Shopping
+                    </Link>
+                  </div>
+                ) : (
                 <div className="divide-y divide-gray-50">
                   {orders.map((o) => {
                     const SI = STATUS_ICON[o.status]
@@ -474,6 +469,7 @@ export default function AccountPage() {
                     )
                   })}
                 </div>
+                )}
               </div>
             )}
 

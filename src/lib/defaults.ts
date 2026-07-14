@@ -281,6 +281,8 @@ export const DEFAULT_SETTINGS: StoreSettings = {
       quote: "I was losing handfuls in the shower every day. After 8 weeks on Stemuvita, my drain is almost completely clear. I genuinely can't believe the difference.",
       beforeLabel: 'Before',
       afterLabel: '8 Weeks',
+      beforeImage: '',
+      afterImage: '',
     },
     {
       id: '2',
@@ -293,6 +295,8 @@ export const DEFAULT_SETTINGS: StoreSettings = {
       quote: 'The scalp inflammation was the first thing to go — within 2 weeks. By week 12, my hairline had actually moved forward. My barber noticed before I even said anything.',
       beforeLabel: 'Before',
       afterLabel: '12 Weeks',
+      beforeImage: '',
+      afterImage: '',
     },
     {
       id: '3',
@@ -305,6 +309,8 @@ export const DEFAULT_SETTINGS: StoreSettings = {
       quote: 'Postpartum shedding was destroying my confidence. My doctor said to wait it out but I tried Stemuvita and within 6 weeks the shedding had basically stopped. New growth everywhere.',
       beforeLabel: 'Before',
       afterLabel: '6 Weeks',
+      beforeImage: '',
+      afterImage: '',
     },
   ],
 

@@ -13,7 +13,7 @@ import type { PageSection } from '@/types'
 
 // ── field schema ──────────────────────────────────────────────────────────────
 type FieldType = 'text' | 'textarea' | 'color' | 'select' | 'url' | 'image' | 'video' | 'list'
-interface FieldDef { key: string; label: string; type: FieldType; options?: string[]; placeholder?: string; labelKey?: string }
+interface FieldDef { key: string; label: string; type: FieldType; options?: string[]; placeholder?: string; labelKey?: string; itemImageFields?: { key: string; label: string }[] }
 interface ElementSlot { key: string; label: string; icon: string; defaultZ: number }
 interface SectionMeta { icon: string; label: string; cmsTab?: string; fields: FieldDef[]; elements?: ElementSlot[] }
 
@@ -56,7 +56,13 @@ const SCHEMA: Record<string, SectionMeta> = {
   beforeafter: {
     icon: '🔄', label: 'Before & After', cmsTab: 'beforeafter',
     fields: [
-      { key: 'beforeAfterCases', label: 'Before/After Cases', type: 'list', labelKey: 'name' },
+      {
+        key: 'beforeAfterCases', label: 'Before/After Cases', type: 'list', labelKey: 'name',
+        itemImageFields: [
+          { key: 'beforeImage', label: 'Before' },
+          { key: 'afterImage', label: 'After' },
+        ],
+      },
     ],
   },
   timeline: {
@@ -241,11 +247,19 @@ function MediaField({
 function ListField({
   value,
   labelKey,
+  itemImageFields,
   onDelete,
+  onItemImageUpload,
+  onItemImageClear,
+  uploadingItemKey,
 }: {
   value: string
   labelKey?: string
+  itemImageFields?: { key: string; label: string }[]
   onDelete: (index: number) => void
+  onItemImageUpload?: (index: number, imageKey: string, file: File) => void
+  onItemImageClear?: (index: number, imageKey: string) => void
+  uploadingItemKey?: (index: number, imageKey: string) => boolean
 }) {
   let items: Array<Record<string, unknown> | string> = []
   try { items = JSON.parse(value || '[]') } catch {}
@@ -260,24 +274,75 @@ function ListField({
   }
 
   return (
-    <div className="space-y-1">
+    <div className="space-y-2">
       {items.map((item, i) => {
         const label = typeof item === 'string'
           ? item
           : labelKey
           ? String((item as Record<string, unknown>)[labelKey] ?? `Item ${i + 1}`)
           : `Item ${i + 1}`
+        const record = typeof item === 'string' ? null : (item as Record<string, unknown>)
 
         return (
-          <div key={i} className="group flex items-center gap-2 px-3 py-2 bg-white/5 rounded-xl hover:bg-white/8 transition-colors">
-            <span className="flex-1 text-xs text-white/70 truncate" title={label}>{label}</span>
-            <button
-              onClick={() => onDelete(i)}
-              className="opacity-0 group-hover:opacity-100 w-6 h-6 flex items-center justify-center rounded-full bg-red-500/20 hover:bg-red-500 transition-all flex-shrink-0"
-              title="Delete item"
-            >
-              <X className="w-3 h-3 text-white" />
-            </button>
+          <div key={i} className="group bg-white/5 rounded-xl hover:bg-white/8 transition-colors">
+            <div className="flex items-center gap-2 px-3 py-2">
+              <span className="flex-1 text-xs text-white/70 truncate" title={label}>{label}</span>
+              <button
+                onClick={() => onDelete(i)}
+                className="opacity-0 group-hover:opacity-100 w-6 h-6 flex items-center justify-center rounded-full bg-red-500/20 hover:bg-red-500 transition-all flex-shrink-0"
+                title="Delete item"
+              >
+                <X className="w-3 h-3 text-white" />
+              </button>
+            </div>
+
+            {record && itemImageFields && itemImageFields.length > 0 && (
+              <div className="grid grid-cols-2 gap-2 px-3 pb-3">
+                {itemImageFields.map(({ key: imageKey, label: imageLabel }) => {
+                  const url = String(record[imageKey] ?? '')
+                  const busy = uploadingItemKey?.(i, imageKey) ?? false
+                  return (
+                    <div key={imageKey}>
+                      <p className="text-[10px] text-white/35 mb-1">{imageLabel}</p>
+                      {url ? (
+                        <div className="relative rounded-lg overflow-hidden border border-white/10">
+                          <img src={url} alt="" className="w-full h-16 object-cover" />
+                          <button
+                            onClick={() => onItemImageClear?.(i, imageKey)}
+                            className="absolute top-1 right-1 w-5 h-5 bg-black/60 hover:bg-red-500/80 rounded-full flex items-center justify-center transition-colors"
+                            title="Remove"
+                          >
+                            <X className="w-2.5 h-2.5 text-white" />
+                          </button>
+                        </div>
+                      ) : (
+                        <label className={`flex flex-col items-center justify-center gap-1 w-full py-3 rounded-lg border border-dashed cursor-pointer transition-all ${busy ? 'border-white/20 bg-white/3 cursor-wait' : 'border-white/15 bg-white/3 hover:border-white/30 hover:bg-white/5'}`}>
+                          {busy ? (
+                            <Loader2 className="w-3.5 h-3.5 text-[#4ade80] animate-spin" />
+                          ) : (
+                            <>
+                              <Upload className="w-3.5 h-3.5 text-white/30" />
+                              <span className="text-[10px] text-white/40">Upload</span>
+                            </>
+                          )}
+                          <input
+                            type="file"
+                            accept="image/*"
+                            className="hidden"
+                            disabled={busy}
+                            onChange={e => {
+                              const file = e.target.files?.[0]
+                              if (file) onItemImageUpload?.(i, imageKey, file)
+                              e.target.value = ''
+                            }}
+                          />
+                        </label>
+                      )}
+                    </div>
+                  )
+                })}
+              </div>
+            )}
           </div>
         )
       })}
@@ -493,6 +558,60 @@ export default function BuilderPage() {
     const next = [...items]
     next.splice(index, 1)
     updateField(key, JSON.stringify(next))
+  }
+
+  function readListItems(key: string): Array<Record<string, unknown>> {
+    const currentVal = rawRef.current[key]
+    try {
+      const items = JSON.parse(currentVal ?? JSON.stringify((DEFAULT_SETTINGS as unknown as Record<string, unknown>)[key] ?? []))
+      return Array.isArray(items) ? items : []
+    } catch {
+      return []
+    }
+  }
+
+  function listItemUploadKey(fieldKey: string, index: number, imageKey: string) {
+    return `${fieldKey}.${index}.${imageKey}`
+  }
+
+  async function handleListItemImageUpload(fieldKey: string, index: number, imageKey: string, file: File) {
+    const uploadKey = listItemUploadKey(fieldKey, index, imageKey)
+    setUploadingKeys(prev => ({ ...prev, [uploadKey]: true }))
+    try {
+      const form = new FormData()
+      form.append('file', file)
+      const res = await fetch('/api/admin/upload', { method: 'POST', body: form })
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}))
+        showToast(err.error ?? 'Upload failed', false)
+        return
+      }
+      const { url } = await res.json()
+      const items = readListItems(fieldKey)
+      const next = [...items]
+      next[index] = { ...next[index], [imageKey]: url }
+      const newRaw = { ...rawRef.current, [fieldKey]: JSON.stringify(next) }
+      rawRef.current = newRaw
+      setRaw(newRaw)
+      await doSave(newRaw)
+      showToast('Uploaded & saved!')
+      setIframeKey(k => k + 1)
+    } catch {
+      showToast('Upload failed — check your connection', false)
+    } finally {
+      setUploadingKeys(prev => ({ ...prev, [uploadKey]: false }))
+    }
+  }
+
+  async function handleListItemImageClear(fieldKey: string, index: number, imageKey: string) {
+    const items = readListItems(fieldKey)
+    const next = [...items]
+    next[index] = { ...next[index], [imageKey]: '' }
+    const newRaw = { ...rawRef.current, [fieldKey]: JSON.stringify(next) }
+    rawRef.current = newRaw
+    setRaw(newRaw)
+    await doSave(newRaw)
+    setIframeKey(k => k + 1)
   }
 
   async function doSave(currentRaw = rawRef.current) {
@@ -970,7 +1089,11 @@ export default function BuilderPage() {
                             : JSON.stringify((DEFAULT_SETTINGS as unknown as Record<string, unknown>)[f.key] ?? [])
                         }
                         labelKey={f.labelKey}
+                        itemImageFields={f.itemImageFields}
                         onDelete={i => handleListDelete(f.key, i)}
+                        onItemImageUpload={(i, imageKey, file) => handleListItemImageUpload(f.key, i, imageKey, file)}
+                        onItemImageClear={(i, imageKey) => handleListItemImageClear(f.key, i, imageKey)}
+                        uploadingItemKey={(i, imageKey) => !!uploadingKeys[listItemUploadKey(f.key, i, imageKey)]}
                       />
                     ) : (
                       <input

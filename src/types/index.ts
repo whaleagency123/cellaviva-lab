@@ -121,6 +121,8 @@ export interface BeforeAfterCase {
   quote: string
   beforeLabel: string
   afterLabel: string
+  beforeImage?: string
+  afterImage?: string
 }
 
 export interface ComparisonRow {

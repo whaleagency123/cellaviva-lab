@@ -605,7 +605,7 @@ export default function AdminCMSPage() {
           {activeTab === 'beforeafter' && (
             <div className="space-y-4">
               <div className="flex justify-end">
-                <button onClick={() => upd('beforeAfterCases', [...settings.beforeAfterCases, { id: id(), name: 'Customer Name', age: 30, duration: '8 Weeks', concern: 'Hair concern', result: 'Visible result', stars: 5, quote: 'Customer quote here...', beforeLabel: 'Before', afterLabel: 'After' }])} className={`${BTN_SM} bg-[#4ade80]/10 text-[#4ade80] hover:bg-[#4ade80]/20`}>
+                <button onClick={() => upd('beforeAfterCases', [...settings.beforeAfterCases, { id: id(), name: 'Customer Name', age: 30, duration: '8 Weeks', concern: 'Hair concern', result: 'Visible result', stars: 5, quote: 'Customer quote here...', beforeLabel: 'Before', afterLabel: 'After', beforeImage: '', afterImage: '' }])} className={`${BTN_SM} bg-[#4ade80]/10 text-[#4ade80] hover:bg-[#4ade80]/20`}>
                   <Plus className="w-3.5 h-3.5" /> Add Case
                 </button>
               </div>
@@ -648,6 +648,38 @@ export default function AdminCMSPage() {
                   <div>
                     <label className={LABEL}>Customer Quote</label>
                     <textarea rows={3} value={c.quote} onChange={e => { const n = [...settings.beforeAfterCases]; n[i] = { ...n[i], quote: e.target.value }; upd('beforeAfterCases', n) }} className={INPUT + ' resize-none'} />
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-3">
+                    <div>
+                      <label className={LABEL}>Before Photo</label>
+                      {c.beforeImage && (
+                        <img src={c.beforeImage} alt="" className="w-full h-28 object-cover rounded-xl border border-white/10 mb-2" />
+                      )}
+                      <div className="flex gap-2">
+                        <input type="text" value={c.beforeImage ?? ''} onChange={e => { const n = [...settings.beforeAfterCases]; n[i] = { ...n[i], beforeImage: e.target.value }; upd('beforeAfterCases', n) }} className={`${INPUT} flex-1`} placeholder="/uploads/before.jpg" />
+                        <label className={`flex items-center gap-1.5 px-3 py-2 bg-white/8 hover:bg-white/12 border border-white/10 rounded-xl text-xs text-white/60 hover:text-white/80 cursor-pointer transition-colors flex-shrink-0 ${uploadingImage ? 'opacity-50 pointer-events-none' : ''}`}>
+                          {uploadingImage ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Upload className="w-3.5 h-3.5" />}
+                          <input type="file" accept="image/*" className="hidden" onChange={e => { const f = e.target.files?.[0]; if (f) uploadImage(f, url => { const n = [...settings.beforeAfterCases]; n[i] = { ...n[i], beforeImage: url }; upd('beforeAfterCases', n) }); e.target.value = '' }} />
+                        </label>
+                      </div>
+                      <label className={`${LABEL} mt-2`}>Before Badge Text</label>
+                      <input type="text" value={c.beforeLabel} onChange={e => { const n = [...settings.beforeAfterCases]; n[i] = { ...n[i], beforeLabel: e.target.value }; upd('beforeAfterCases', n) }} className={INPUT} placeholder="Before" />
+                    </div>
+                    <div>
+                      <label className={LABEL}>After Photo</label>
+                      {c.afterImage && (
+                        <img src={c.afterImage} alt="" className="w-full h-28 object-cover rounded-xl border border-white/10 mb-2" />
+                      )}
+                      <div className="flex gap-2">
+                        <input type="text" value={c.afterImage ?? ''} onChange={e => { const n = [...settings.beforeAfterCases]; n[i] = { ...n[i], afterImage: e.target.value }; upd('beforeAfterCases', n) }} className={`${INPUT} flex-1`} placeholder="/uploads/after.jpg" />
+                        <label className={`flex items-center gap-1.5 px-3 py-2 bg-white/8 hover:bg-white/12 border border-white/10 rounded-xl text-xs text-white/60 hover:text-white/80 cursor-pointer transition-colors flex-shrink-0 ${uploadingImage ? 'opacity-50 pointer-events-none' : ''}`}>
+                          {uploadingImage ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Upload className="w-3.5 h-3.5" />}
+                          <input type="file" accept="image/*" className="hidden" onChange={e => { const f = e.target.files?.[0]; if (f) uploadImage(f, url => { const n = [...settings.beforeAfterCases]; n[i] = { ...n[i], afterImage: url }; upd('beforeAfterCases', n) }); e.target.value = '' }} />
+                        </label>
+                      </div>
+                      <label className={`${LABEL} mt-2`}>After Badge Text</label>
+                      <input type="text" value={c.afterLabel} onChange={e => { const n = [...settings.beforeAfterCases]; n[i] = { ...n[i], afterLabel: e.target.value }; upd('beforeAfterCases', n) }} className={INPUT} placeholder="8 Weeks" />
+                    </div>
                   </div>
                 </div>
               ))}
