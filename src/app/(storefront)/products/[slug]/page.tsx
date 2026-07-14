@@ -188,6 +188,7 @@ export default function ProductPage() {
   const [reviewForm, setReviewForm] = useState({ name: '', email: '', rating: 5, title: '', body: '' })
   const [reviewSubmitting, setReviewSubmitting] = useState(false)
   const [reviewSubmitted, setReviewSubmitted] = useState(false)
+  const [subscriptionsEnabled, setSubscriptionsEnabled] = useState(true)
   useEffect(() => {
     if (!slug) return
     fetch(`/api/reviews/${slug}`)
@@ -195,6 +196,12 @@ export default function ProductPage() {
       .then((data) => { setReviews(Array.isArray(data) ? data : []); setReviewsLoading(false) })
       .catch(() => setReviewsLoading(false))
   }, [slug])
+  useEffect(() => {
+    fetch('/api/settings')
+      .then((r) => r.json())
+      .then((d: Record<string, string>) => setSubscriptionsEnabled(d.subscriptionsEnabled !== 'false'))
+      .catch(() => {})
+  }, [])
 
   if (!product) {
     return (
@@ -215,8 +222,10 @@ export default function ProductPage() {
   const avgRating = reviews.length ? reviews.reduce((s, r) => s + r.rating, 0) / reviews.length : 4.9
   const displayRating = reviews.length ? avgRating : 4.9
   const reviewCount = reviews.length || 1247
+  const outOfStock = product.stock <= 0
 
   function handleAddToCart() {
+    if (outOfStock) return
     addItem(product!, qty)
     setAdded(true)
     setTimeout(() => setAdded(false), 2000)
@@ -432,9 +441,15 @@ export default function ProductPage() {
             </ul>
 
             {/* Stock warning */}
-            <p className="text-sm font-semibold text-orange-500">
-              ⚡ Only {product.stock} left in stock — order soon
-            </p>
+            {outOfStock ? (
+              <p className="text-sm font-semibold text-gray-400">
+                {product.isBundle ? 'Out of Stock — one or more included products is unavailable' : 'Out of Stock'}
+              </p>
+            ) : (
+              <p className="text-sm font-semibold text-orange-500">
+                ⚡ Only {product.stock} left in stock — order soon
+              </p>
+            )}
 
             {/* Qty + ATC */}
             <div className="flex gap-3">
@@ -456,13 +471,18 @@ export default function ProductPage() {
 
               <button
                 onClick={handleAddToCart}
+                disabled={outOfStock}
                 className={`flex-1 flex items-center justify-center gap-2 py-3.5 rounded-2xl text-sm font-bold transition-all ${
-                  added
+                  outOfStock
+                    ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                    : added
                     ? 'bg-[#52b788] text-white'
                     : 'bg-[#1b4332] text-white hover:bg-[#2d6a4f]'
                 }`}
               >
-                {added ? (
+                {outOfStock ? (
+                  'Out of Stock'
+                ) : added ? (
                   <><CheckCircle2 className="w-4 h-4" /> Added to Cart!</>
                 ) : (
                   <>Add to Cart · {formatPrice(activePrice * qty)}</>
@@ -473,15 +493,17 @@ export default function ProductPage() {
             </div>
 
             {/* Subscribe & save */}
-            <div className="bg-[#d8f3dc] rounded-2xl p-4 flex items-start gap-3">
-              <RefreshCw className="w-5 h-5 text-[#2d6a4f] flex-shrink-0 mt-0.5" />
-              <div>
-                <p className="text-sm font-bold text-[#1b4332]">Subscribe & Save 15%</p>
-                <p className="text-xs text-[#2d6a4f] mt-0.5">
-                  {formatPrice(activePrice * 0.85)}/month · Cancel anytime · Free delivery
-                </p>
+            {subscriptionsEnabled && !outOfStock && (
+              <div className="bg-[#d8f3dc] rounded-2xl p-4 flex items-start gap-3">
+                <RefreshCw className="w-5 h-5 text-[#2d6a4f] flex-shrink-0 mt-0.5" />
+                <div>
+                  <p className="text-sm font-bold text-[#1b4332]">Subscribe & Save 15%</p>
+                  <p className="text-xs text-[#2d6a4f] mt-0.5">
+                    {formatPrice(activePrice * 0.85)}/month · Cancel anytime · Free delivery
+                  </p>
+                </div>
               </div>
-            </div>
+            )}
 
             {/* Delivery estimate */}
             <div className="flex items-center gap-2 text-sm text-gray-500 bg-white rounded-2xl border border-gray-100 px-4 py-3">
@@ -507,11 +529,12 @@ export default function ProductPage() {
         </div>
         <button
           onClick={handleAddToCart}
+          disabled={outOfStock}
           className={`flex items-center gap-2 px-5 py-3 rounded-2xl text-sm font-bold transition-all flex-shrink-0 ${
-            added ? 'bg-[#52b788] text-white' : 'bg-[#1b4332] text-white'
+            outOfStock ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : added ? 'bg-[#52b788] text-white' : 'bg-[#1b4332] text-white'
           }`}
         >
-          {added ? 'Added ✓' : 'Add to Cart'}
+          {outOfStock ? 'Out of Stock' : added ? 'Added ✓' : 'Add to Cart'}
         </button>
       </div>
 
@@ -773,26 +796,36 @@ export default function ProductPage() {
               const bundleDiscount = bundle.salePrice
                 ? Math.round(((bundle.price - bundle.salePrice) / bundle.price) * 100)
                 : 0
+              const bundleOutOfStock = bundle.stock <= 0
               return (
-                <div key={bundle.id} className="bg-[#1b4332] rounded-3xl p-6 text-white">
+                <div key={bundle.id} className={`bg-[#1b4332] rounded-3xl p-6 text-white ${bundleOutOfStock ? 'opacity-70' : ''}`}>
                   <div className="text-4xl mb-4">🌿💧</div>
                   <p className="text-[#52b788] text-xs font-bold uppercase tracking-widest mb-1">Best Value</p>
                   <p className="font-black text-lg mb-2">{bundle.title}</p>
                   <p className="text-white/60 text-xs mb-4 line-clamp-2">{bundle.description}</p>
-                  <div className="flex items-baseline gap-2 mb-4">
+                  <div className="flex items-baseline gap-2 mb-2">
                     <span className="text-2xl font-black">{formatPrice(bundle.salePrice ?? bundle.price)}</span>
                     {bundle.salePrice && <span className="text-white/40 line-through text-sm">{formatPrice(bundle.price)}</span>}
                     {bundleDiscount > 0 && <span className="bg-white/20 text-xs font-bold px-2 py-0.5 rounded-full">{bundleDiscount}% OFF</span>}
                   </div>
+                  <p className={`text-xs font-semibold mb-4 ${bundleOutOfStock ? 'text-red-300' : 'text-white/50'}`}>
+                    {bundleOutOfStock ? 'Out of Stock' : `${bundle.stock} in stock`}
+                  </p>
                   <button
+                    disabled={bundleOutOfStock}
                     onClick={() => {
+                      if (bundleOutOfStock) return
                       addItem(bundle, 1)
                       setAdded(true)
                       setTimeout(() => setAdded(false), 2000)
                     }}
-                    className="w-full bg-[#52b788] text-[#0b2819] py-3 rounded-2xl text-sm font-bold hover:bg-[#40a070] transition-colors"
+                    className={`w-full py-3 rounded-2xl text-sm font-bold transition-colors ${
+                      bundleOutOfStock
+                        ? 'bg-white/10 text-white/40 cursor-not-allowed'
+                        : 'bg-[#52b788] text-[#0b2819] hover:bg-[#40a070]'
+                    }`}
                   >
-                    Add Bundle to Cart
+                    {bundleOutOfStock ? 'Out of Stock' : 'Add Bundle to Cart'}
                   </button>
                 </div>
               )
