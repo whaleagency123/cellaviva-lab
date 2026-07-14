@@ -1,10 +1,11 @@
 'use client'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import dynamic from 'next/dynamic'
 import {
   Repeat2, TrendingUp, TrendingDown, Users, DollarSign,
   Search, X, ChevronRight, Pause, Play, XCircle,
   Mail, Phone, Calendar, BarChart2, RefreshCw,
+  ToggleLeft, ToggleRight, WifiOff,
 } from 'lucide-react'
 
 const SubCharts = dynamic(() => import('./SubCharts'), {
@@ -72,6 +73,24 @@ export default function SubscriptionsPage() {
   const [syncing, setSyncing] = useState(false)
   const [syncMsg, setSyncMsg] = useState('')
 
+  const [subsEnabled, setSubsEnabled] = useState(true)
+  useEffect(() => {
+    fetch('/api/settings')
+      .then(r => r.json())
+      .then((d: Record<string, string>) => setSubsEnabled(d.subscriptionsEnabled !== 'false'))
+      .catch(() => {})
+  }, [])
+
+  async function toggleSubscriptions() {
+    const newVal = subsEnabled ? 'false' : 'true'
+    setSubsEnabled(!subsEnabled)
+    await fetch('/api/settings', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ subscriptionsEnabled: newVal }),
+    })
+  }
+
   async function updateSubStatus(id: string, status: SubStatus) {
     setSubs(prev => prev.map(s => s.id === id
       ? { ...s, status, nextBilling: status === 'ACTIVE' ? s.nextBilling : '—' }
@@ -137,6 +156,45 @@ export default function SubscriptionsPage() {
 
   return (
     <div className="p-8 space-y-7 min-h-screen bg-[#0f1117]">
+
+      {/* ── Subscribe & Save Master Toggle ── */}
+      <div className={`flex items-center justify-between p-5 rounded-2xl border-2 transition-all flex-wrap gap-4 ${
+        subsEnabled
+          ? 'bg-[#4ade80]/8 border-[#4ade80]/40'
+          : 'bg-red-500/8 border-red-500/30'
+      }`}>
+        <div className="flex items-center gap-4">
+          <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${
+            subsEnabled ? 'bg-[#4ade80]/15' : 'bg-red-500/15'
+          }`}>
+            {subsEnabled
+              ? <Repeat2 className="w-6 h-6 text-[#4ade80]" />
+              : <WifiOff className="w-6 h-6 text-red-400" />}
+          </div>
+          <div>
+            <p className={`text-lg font-black ${subsEnabled ? 'text-[#4ade80]' : 'text-red-400'}`}>
+              Subscribe &amp; Save — {subsEnabled ? 'ACTIVE' : 'DISABLED'}
+            </p>
+            <p className="text-sm text-white/40">
+              {subsEnabled
+                ? 'Customers can subscribe on product pages and via /subscribe'
+                : 'Hidden sitewide — nav link, footer link, /subscribe page, and product-page option are all off'}
+            </p>
+          </div>
+        </div>
+        <button
+          onClick={toggleSubscriptions}
+          className={`flex items-center gap-3 px-6 py-3 rounded-2xl font-bold text-sm transition-all ${
+            subsEnabled
+              ? 'bg-red-500/15 hover:bg-red-500/25 border border-red-500/30 text-red-400'
+              : 'bg-[#4ade80]/15 hover:bg-[#4ade80]/25 border border-[#4ade80]/30 text-[#4ade80]'
+          }`}
+        >
+          {subsEnabled
+            ? <><ToggleRight className="w-5 h-5" /> Disable Subscriptions</>
+            : <><ToggleLeft className="w-5 h-5" /> Enable Subscriptions</>}
+        </button>
+      </div>
 
       {/* Header */}
       <div className="flex items-center justify-between flex-wrap gap-4">

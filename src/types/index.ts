@@ -12,6 +12,8 @@ export interface Product {
   images: string[]
   featured: boolean
   active: boolean
+  isBundle?: boolean
+  bundleProductIds?: string[]
   createdAt: string
   updatedAt: string
 }
@@ -285,4 +287,7 @@ export interface StoreSettings {
 
   // Page section order + visibility
   pageSections: PageSection[]
+
+  // Master toggle: turn off Subscribe & Save sitewide
+  subscriptionsEnabled: string
 }

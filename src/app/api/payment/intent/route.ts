@@ -37,7 +37,7 @@ export async function POST(req: NextRequest) {
     const ids = cartItems.map((c) => c.productId)
     const products = await prisma.product.findMany({
       where: { id: { in: ids }, active: true },
-      select: { id: true, price: true, salePrice: true, stock: true, title: true },
+      select: { id: true, price: true, salePrice: true, stock: true, title: true, isBundle: true, bundleProductIds: true },
     })
 
     if (products.length !== ids.length) {
@@ -46,9 +46,23 @@ export async function POST(req: NextRequest) {
 
     const productMap = Object.fromEntries(products.map((p) => [p.id, p]))
 
+    // Bundles have no stock of their own — availability is the lowest stock among
+    // their included products, so fetch stock for any component not already loaded.
+    const componentIds = [...new Set(products.flatMap((p) => (p.isBundle ? p.bundleProductIds : [])))]
+      .filter((id) => !productMap[id])
+    const componentStock = componentIds.length > 0
+      ? await prisma.product.findMany({ where: { id: { in: componentIds } }, select: { id: true, stock: true } })
+      : []
+    const componentStockMap = Object.fromEntries(componentStock.map((p) => [p.id, p.stock]))
+
+    function effectiveStock(p: (typeof products)[number]): number {
+      if (!p.isBundle || p.bundleProductIds.length === 0) return p.stock
+      return Math.min(...p.bundleProductIds.map((id) => productMap[id]?.stock ?? componentStockMap[id] ?? 0))
+    }
+
     for (const item of cartItems) {
       const p = productMap[item.productId]
-      if (p.stock < item.quantity) {
+      if (effectiveStock(p) < item.quantity) {
         return NextResponse.json({ error: `Insufficient stock for "${p.title}"` }, { status: 400 })
       }
     }

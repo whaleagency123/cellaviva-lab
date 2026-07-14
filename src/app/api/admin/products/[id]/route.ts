@@ -13,10 +13,10 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
   const { id } = await params
   try {
     const body = await req.json()
-    const { title, description, price, salePrice, stock, images, featured, status, comingSoon } = body
+    const { title, description, price, salePrice, stock, images, featured, status, comingSoon, isBundle, bundleProductIds } = body
 
-    const active = status === 'ACTIVE'
-    const isComing = !active && status === 'DRAFT'
+    const active = status !== undefined ? status === 'ACTIVE' : undefined
+    const isComing = active !== undefined ? (!active && status === 'DRAFT') : undefined
 
     const product = await prisma.product.update({
       where: { id },
@@ -24,12 +24,14 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
         title,
         description,
         price:      price != null ? Number(price) : undefined,
-        salePrice:  salePrice     ? Number(salePrice) : null,
+        salePrice:  salePrice !== undefined ? (salePrice ? Number(salePrice) : null) : undefined,
         stock:      stock  != null ? Number(stock)  : undefined,
         images:     images         ?? undefined,
         featured:   featured       != null ? Boolean(featured) : undefined,
         active,
         comingSoon: comingSoon     != null ? Boolean(comingSoon) : isComing,
+        isBundle:         isBundle != null ? Boolean(isBundle) : undefined,
+        bundleProductIds: Array.isArray(bundleProductIds) ? bundleProductIds : undefined,
       },
     })
     return NextResponse.json(product)

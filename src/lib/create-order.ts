@@ -62,12 +62,21 @@ export async function createOrderFromPaymentIntent(
     },
   })
 
-  // Decrement stock for all items
+  // Decrement stock for all items — bundles decrement their included products' real
+  // inventory instead of any stock of their own.
+  const decrements = new Map<string, number>()
+  for (const l of lineItems) {
+    const p = productMap[l.productId]
+    const targets = p?.isBundle && p.bundleProductIds.length > 0 ? p.bundleProductIds : [l.productId]
+    for (const id of targets) {
+      decrements.set(id, (decrements.get(id) ?? 0) + l.quantity)
+    }
+  }
   await Promise.all(
-    lineItems.map((l) =>
+    [...decrements.entries()].map(([id, qty]) =>
       prisma.product.update({
-        where: { id: l.productId },
-        data: { stock: { decrement: l.quantity } },
+        where: { id },
+        data: { stock: { decrement: qty } },
       }),
     ),
   )

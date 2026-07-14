@@ -385,4 +385,7 @@ export const DEFAULT_SETTINGS: StoreSettings = {
     { id: 'comparison',       label: 'Comparison Table',   visible: true },
     { id: 'faq',              label: 'FAQ',                visible: true },
   ],
+
+  // Master toggle: turn off Subscribe & Save sitewide
+  subscriptionsEnabled: 'true',
 }

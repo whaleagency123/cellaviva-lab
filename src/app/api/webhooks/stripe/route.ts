@@ -69,19 +69,29 @@ export async function POST(req: NextRequest) {
           // Find the order and restore stock for each line item
           const order = await prisma.order.findFirst({
             where: { stripePaymentId: piId },
-            include: { lineItems: true },
+            include: { lineItems: { include: { product: true } } },
           })
           if (order) {
             await prisma.order.update({
               where: { id: order.id },
               data: { paymentStatus: 'REFUNDED', status: 'CANCELLED' },
             })
-            // Restore inventory
+            // Restore inventory — bundles restore their included products' real
+            // inventory instead of any stock of their own.
+            const increments = new Map<string, number>()
+            for (const item of order.lineItems) {
+              const targets = item.product?.isBundle && item.product.bundleProductIds.length > 0
+                ? item.product.bundleProductIds
+                : [item.productId]
+              for (const id of targets) {
+                increments.set(id, (increments.get(id) ?? 0) + item.quantity)
+              }
+            }
             await Promise.all(
-              order.lineItems.map((item) =>
+              [...increments.entries()].map(([id, qty]) =>
                 prisma.product.update({
-                  where: { id: item.productId },
-                  data: { stock: { increment: item.quantity } },
+                  where: { id },
+                  data: { stock: { increment: qty } },
                 }).catch(() => {}),
               ),
             )

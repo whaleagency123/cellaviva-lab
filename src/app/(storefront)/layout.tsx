@@ -46,6 +46,9 @@ export default async function StorefrontLayout({ children }: { children: React.R
     loadPlugins(),
   ])
   const cssVars = buildCssVars(theme)
+  const navLinks = s.subscriptionsEnabled === 'false'
+    ? s.navLinks.filter(l => l.href !== '/subscribe')
+    : s.navLinks
 
   let libraryFontNames: string[] = []
   try { libraryFontNames = (JSON.parse(theme.sfFontLibrary) as { name: string }[]).map(f => f.name) } catch {}
@@ -71,7 +74,7 @@ export default async function StorefrontLayout({ children }: { children: React.R
         )}
         <style dangerouslySetInnerHTML={{ __html: cssVars }} />
         <AnnouncementBar text={s.announcementText} />
-        <Header navLinks={s.navLinks} sfIconCart={theme.sfIconCart} />
+        <Header navLinks={navLinks} sfIconCart={theme.sfIconCart} />
         <main>{children}</main>
         <Footer settings={s} />
         <PluginRenderer plugins={plugins} />

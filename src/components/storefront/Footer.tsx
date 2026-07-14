@@ -157,7 +157,7 @@ export function Footer({ settings = DEFAULT_SETTINGS }: FooterProps) {
                 ['Complete Bundle', '/products'],
                 [t('nav.shopAll'), '/products'],
                 [t('trackOrder.title'), '/track-order'],
-                [t('footer.subscribeAndSave'), '/products/stemuvita'],
+                ...(settings.subscriptionsEnabled !== 'false' ? [[t('footer.subscribeAndSave'), '/products/stemuvita']] : []),
               ].map(([label, href]) => (
                 <li key={label}>
                   <Link href={href} className="text-sm hover:text-[var(--sf-primary)] transition-colors">

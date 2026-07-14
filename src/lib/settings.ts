@@ -92,6 +92,7 @@ async function fetchStoreSettings(): Promise<StoreSettings> {
       sliderBeforeLabel:   m.sliderBeforeLabel   ?? DEFAULT_SETTINGS.sliderBeforeLabel,
       sliderAfterLabel:    m.sliderAfterLabel    ?? DEFAULT_SETTINGS.sliderAfterLabel,
       pageSections:        parseJSON(m.pageSections, DEFAULT_SETTINGS.pageSections),
+      subscriptionsEnabled: m.subscriptionsEnabled ?? DEFAULT_SETTINGS.subscriptionsEnabled,
     }
   } catch {
     return DEFAULT_SETTINGS

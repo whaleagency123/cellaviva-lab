@@ -1,5 +1,6 @@
 'use client'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import { Check, Loader2, Star, Shield, Truck, RefreshCw, Leaf } from 'lucide-react'
 import Link from 'next/link'
 
@@ -46,6 +47,19 @@ const PERKS = [
 export default function SubscribePage() {
   const [loading, setLoading] = useState<string | null>(null)
   const [error,   setError]   = useState<string | null>(null)
+  const [enabled, setEnabled] = useState<boolean | null>(null)
+  const router = useRouter()
+
+  useEffect(() => {
+    fetch('/api/settings')
+      .then(r => r.json())
+      .then((d: Record<string, string>) => {
+        const on = d.subscriptionsEnabled !== 'false'
+        setEnabled(on)
+        if (!on) router.replace('/products')
+      })
+      .catch(() => setEnabled(true))
+  }, [router])
 
   async function subscribe(slug: string) {
     setLoading(slug)
@@ -64,6 +78,14 @@ export default function SubscribePage() {
     } finally {
       setLoading(null)
     }
+  }
+
+  if (enabled !== true) {
+    return (
+      <div className="min-h-screen bg-[var(--sf-bg)] flex items-center justify-center">
+        <Loader2 className="w-8 h-8 animate-spin text-[var(--sf-primary)]" />
+      </div>
+    )
   }
 
   return (

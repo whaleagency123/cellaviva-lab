@@ -1,5 +1,5 @@
 'use client'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Star, Truck, Shield, RotateCcw, Calendar, Minus, Plus, RefreshCw, Check } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useCartStore } from '@/store/cart'
@@ -22,13 +22,26 @@ const CERTIFICATIONS = [
 export function ConversionColumn({ product }: ConversionColumnProps) {
   const [qty, setQty] = useState(1)
   const [purchaseType, setPurchaseType] = useState<'one-time' | 'subscribe'>('subscribe')
+  const [subscriptionsEnabled, setSubscriptionsEnabled] = useState(true)
   const { addItem } = useCartStore()
+
+  useEffect(() => {
+    fetch('/api/settings')
+      .then(r => r.json())
+      .then((d: Record<string, string>) => {
+        if (d.subscriptionsEnabled === 'false') {
+          setSubscriptionsEnabled(false)
+          setPurchaseType('one-time')
+        }
+      })
+      .catch(() => {})
+  }, [])
 
   const stockPct = Math.round((product.stock / 200) * 100)
   const basePrice = product.salePrice ?? product.price
   const subscribedPrice = Math.round(basePrice * 0.85 * 100) / 100
 
-  const displayPrice = purchaseType === 'subscribe' ? subscribedPrice : basePrice
+  const displayPrice = subscriptionsEnabled && purchaseType === 'subscribe' ? subscribedPrice : basePrice
 
   return (
     <div className="sticky top-24 space-y-6">
@@ -56,54 +69,56 @@ export function ConversionColumn({ product }: ConversionColumnProps) {
       </div>
 
       {/* Subscribe vs One-Time toggle */}
-      <div className="border border-gray-200 rounded-2xl overflow-hidden">
-        {/* One-time */}
-        <button
-          onClick={() => setPurchaseType('one-time')}
-          className={`w-full flex items-start gap-3 p-4 text-left transition-all ${purchaseType === 'one-time' ? 'bg-gray-50 border-b border-gray-200' : 'hover:bg-gray-50 border-b border-gray-100'}`}
-        >
-          <div className={`w-4 h-4 rounded-full border-2 flex-shrink-0 mt-0.5 flex items-center justify-center ${purchaseType === 'one-time' ? 'border-[#2d6a4f] bg-[#2d6a4f]' : 'border-gray-300'}`}>
-            {purchaseType === 'one-time' && <div className="w-1.5 h-1.5 rounded-full bg-white" />}
-          </div>
-          <div className="flex-1">
-            <div className="flex justify-between items-center">
-              <span className="text-sm font-semibold text-gray-700">One-Time Purchase</span>
-              <span className="text-sm font-bold text-gray-900">{formatPrice(basePrice)}</span>
+      {subscriptionsEnabled && (
+        <div className="border border-gray-200 rounded-2xl overflow-hidden">
+          {/* One-time */}
+          <button
+            onClick={() => setPurchaseType('one-time')}
+            className={`w-full flex items-start gap-3 p-4 text-left transition-all ${purchaseType === 'one-time' ? 'bg-gray-50 border-b border-gray-200' : 'hover:bg-gray-50 border-b border-gray-100'}`}
+          >
+            <div className={`w-4 h-4 rounded-full border-2 flex-shrink-0 mt-0.5 flex items-center justify-center ${purchaseType === 'one-time' ? 'border-[#2d6a4f] bg-[#2d6a4f]' : 'border-gray-300'}`}>
+              {purchaseType === 'one-time' && <div className="w-1.5 h-1.5 rounded-full bg-white" />}
             </div>
-          </div>
-        </button>
+            <div className="flex-1">
+              <div className="flex justify-between items-center">
+                <span className="text-sm font-semibold text-gray-700">One-Time Purchase</span>
+                <span className="text-sm font-bold text-gray-900">{formatPrice(basePrice)}</span>
+              </div>
+            </div>
+          </button>
 
-        {/* Subscribe */}
-        <button
-          onClick={() => setPurchaseType('subscribe')}
-          className={`w-full flex items-start gap-3 p-4 text-left transition-all relative ${purchaseType === 'subscribe' ? 'bg-[#f0faf4]' : 'hover:bg-gray-50'}`}
-        >
-          <div className={`w-4 h-4 rounded-full border-2 flex-shrink-0 mt-0.5 flex items-center justify-center ${purchaseType === 'subscribe' ? 'border-[#2d6a4f] bg-[#2d6a4f]' : 'border-gray-300'}`}>
-            {purchaseType === 'subscribe' && <div className="w-1.5 h-1.5 rounded-full bg-white" />}
-          </div>
-          <div className="flex-1">
-            <div className="flex justify-between items-center">
-              <div className="flex items-center gap-2">
-                <span className="text-sm font-semibold text-gray-700">Subscribe &amp; Save</span>
-                <span className="text-xs bg-[#52b788] text-white font-bold px-2 py-0.5 rounded-full">15% OFF</span>
-              </div>
-              <div className="text-right">
-                <span className="text-sm font-bold text-[#2d6a4f]">{formatPrice(subscribedPrice)}</span>
-                <span className="text-xs text-gray-400 line-through ml-1">{formatPrice(basePrice)}</span>
-              </div>
+          {/* Subscribe */}
+          <button
+            onClick={() => setPurchaseType('subscribe')}
+            className={`w-full flex items-start gap-3 p-4 text-left transition-all relative ${purchaseType === 'subscribe' ? 'bg-[#f0faf4]' : 'hover:bg-gray-50'}`}
+          >
+            <div className={`w-4 h-4 rounded-full border-2 flex-shrink-0 mt-0.5 flex items-center justify-center ${purchaseType === 'subscribe' ? 'border-[#2d6a4f] bg-[#2d6a4f]' : 'border-gray-300'}`}>
+              {purchaseType === 'subscribe' && <div className="w-1.5 h-1.5 rounded-full bg-white" />}
             </div>
-            {purchaseType === 'subscribe' && (
-              <div className="mt-2 space-y-1">
-                {['Delivered every 30 days', 'Free priority shipping', 'Cancel or pause anytime', 'Loyalty points on every order'].map((perk) => (
-                  <div key={perk} className="flex items-center gap-1.5 text-xs text-[#2d6a4f]">
-                    <Check className="w-3 h-3" /> {perk}
-                  </div>
-                ))}
+            <div className="flex-1">
+              <div className="flex justify-between items-center">
+                <div className="flex items-center gap-2">
+                  <span className="text-sm font-semibold text-gray-700">Subscribe &amp; Save</span>
+                  <span className="text-xs bg-[#52b788] text-white font-bold px-2 py-0.5 rounded-full">15% OFF</span>
+                </div>
+                <div className="text-right">
+                  <span className="text-sm font-bold text-[#2d6a4f]">{formatPrice(subscribedPrice)}</span>
+                  <span className="text-xs text-gray-400 line-through ml-1">{formatPrice(basePrice)}</span>
+                </div>
               </div>
-            )}
-          </div>
-        </button>
-      </div>
+              {purchaseType === 'subscribe' && (
+                <div className="mt-2 space-y-1">
+                  {['Delivered every 30 days', 'Free priority shipping', 'Cancel or pause anytime', 'Loyalty points on every order'].map((perk) => (
+                    <div key={perk} className="flex items-center gap-1.5 text-xs text-[#2d6a4f]">
+                      <Check className="w-3 h-3" /> {perk}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </button>
+        </div>
+      )}
 
       {/* Pricing */}
       <div className="flex items-baseline gap-3">

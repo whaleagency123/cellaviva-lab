@@ -19,6 +19,7 @@ interface ProductFull {
   sku: string; barcode: string; weight: number; weightUnit: 'kg' | 'g' | 'lb' | 'oz'
   trackInventory: boolean; seoTitle: string; seoDescription: string
   images: string[]
+  isBundle: boolean; bundleProductIds: string[]
   variants: Variant[]; createdAt: string; updatedAt: string
 }
 
@@ -34,6 +35,7 @@ const MOCK_PRODUCTS: ProductFull[] = [
     seoTitle: 'Stemuvita™ Hair Cleanse – Plant-Based Scalp Cleanser | CELLAVIVA',
     seoDescription: 'Clinically proven plant-based shampoo that reduces hair shedding by 91% in 8 weeks.',
     images: [],
+    isBundle: false, bundleProductIds: [],
     variants: [{ id: 'var_01', title: '250ml', sku: 'CV-HCL-001-250', barcode: '5901234123457', price: 49, comparePrice: 100, stock: 47, weight: 0.35 }],
     createdAt: '2024-01-01T00:00:00Z', updatedAt: '2026-05-20T10:00:00Z',
   },
@@ -48,6 +50,7 @@ const MOCK_PRODUCTS: ProductFull[] = [
     seoTitle: 'Stemuvita™ Scalp Serum – Overnight Follicle Repair | CELLAVIVA',
     seoDescription: 'Leave-in scalp serum with concentrated plant stem cell actives. Stimulates follicle health overnight.',
     images: [],
+    isBundle: false, bundleProductIds: [],
     variants: [{ id: 'var_02', title: '50ml', sku: 'CV-SER-001-50', barcode: '5901234123464', price: 42, comparePrice: 80, stock: 63, weight: 0.15 }],
     createdAt: '2024-01-01T00:00:00Z', updatedAt: '2026-05-18T14:30:00Z',
   },
@@ -62,6 +65,7 @@ const MOCK_PRODUCTS: ProductFull[] = [
     seoTitle: 'Complete Routine Bundle – Hair Cleanse + Scalp Serum | CELLAVIVA',
     seoDescription: 'The complete CELLAVIVA system. Get both products bundled together at the best price.',
     images: [], variants: [],
+    isBundle: true, bundleProductIds: ['prod_stemuvita_01', 'prod_stemuvita_serum_01'],
     createdAt: '2026-05-01T00:00:00Z', updatedAt: '2026-05-22T09:15:00Z',
   },
 ]
@@ -80,6 +84,7 @@ const EMPTY_PRODUCT: ProductFull = {
   tags: [], status: 'DRAFT', featured: false, price: 0, salePrice: null, stock: 0,
   sku: '', barcode: '', weight: 0, weightUnit: 'kg', trackInventory: true,
   seoTitle: '', seoDescription: '', images: [], variants: [],
+  isBundle: false, bundleProductIds: [],
   createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(),
 }
 
@@ -97,6 +102,7 @@ function dbToAdmin(p: any): ProductFull {
     price: p.price, salePrice: p.salePrice ?? null, stock: p.stock,
     sku: '', barcode: '', weight: 0, weightUnit: 'kg', trackInventory: true,
     seoTitle: '', seoDescription: '', images: p.images ?? [],
+    isBundle: p.isBundle ?? false, bundleProductIds: p.bundleProductIds ?? [],
     variants: [], createdAt: p.createdAt, updatedAt: p.updatedAt,
   }
 }
@@ -184,6 +190,8 @@ export default function ProductsAdminPage() {
       featured:    editProduct.featured,
       status:      editProduct.status,
       comingSoon:  editProduct.status === 'DRAFT',
+      isBundle:         editProduct.isBundle,
+      bundleProductIds: editProduct.isBundle ? editProduct.bundleProductIds : [],
     }
     try {
       if (isNew) {
@@ -464,6 +472,43 @@ export default function ProductsAdminPage() {
                     </div>
                     {ep.featured && <Star className="w-4 h-4 text-amber-400 fill-amber-400 ml-auto" />}
                   </label>
+
+                  <label className="flex items-center gap-3 cursor-pointer p-3 rounded-xl border border-white/8 hover:border-white/15 transition-colors">
+                    <input type="checkbox" checked={ep.isBundle} onChange={(e) => setEditProduct({ ...ep, isBundle: e.target.checked })} className="rounded accent-[#4ade80]" />
+                    <div>
+                      <p className="text-sm font-semibold text-white/70">This is a bundle / offer</p>
+                      <p className="text-xs text-white/30">Sell 2+ existing products together at this price — shows as its own product with an "Includes" list</p>
+                    </div>
+                  </label>
+
+                  {ep.isBundle && (
+                    <div className="p-3 rounded-xl border border-white/8 space-y-2">
+                      <p className="text-xs font-semibold text-white/50 mb-1.5">Products included in this bundle</p>
+                      {products.filter((p) => p.id !== ep.id && !p.isBundle).length === 0 ? (
+                        <p className="text-xs text-white/25 italic">No other products yet — add some products first.</p>
+                      ) : (
+                        <div className="space-y-1.5 max-h-48 overflow-y-auto">
+                          {products.filter((p) => p.id !== ep.id && !p.isBundle).map((p) => (
+                            <label key={p.id} className="flex items-center gap-2.5 cursor-pointer hover:bg-white/3 rounded-lg px-2 py-1.5">
+                              <input
+                                type="checkbox"
+                                checked={ep.bundleProductIds.includes(p.id)}
+                                onChange={(e) => {
+                                  const next = e.target.checked
+                                    ? [...ep.bundleProductIds, p.id]
+                                    : ep.bundleProductIds.filter((id) => id !== p.id)
+                                  setEditProduct({ ...ep, bundleProductIds: next })
+                                }}
+                                className="rounded accent-[#4ade80]"
+                              />
+                              <span className="text-sm text-white/70">{p.title}</span>
+                              <span className="text-xs text-white/30 ml-auto">${p.salePrice ?? p.price}</span>
+                            </label>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </>
               )}
 
@@ -576,7 +621,18 @@ export default function ProductsAdminPage() {
                   {ep.trackInventory && (
                     <div>
                       <label className="block text-xs font-semibold text-white/50 mb-1.5">Available quantity</label>
-                      <input type="number" value={ep.stock} onChange={(e) => setEditProduct({ ...ep, stock: Number(e.target.value) })} className={INPUT} />
+                      {ep.isBundle ? (
+                        <div className={`${INPUT} flex items-center justify-between text-white/50 cursor-not-allowed`}>
+                          <span>
+                            {ep.bundleProductIds.length > 0
+                              ? Math.min(...ep.bundleProductIds.map((id) => products.find((p) => p.id === id)?.stock ?? 0))
+                              : 0}
+                          </span>
+                          <span className="text-[10px] text-white/30">Auto — lowest stock of included products</span>
+                        </div>
+                      ) : (
+                        <input type="number" value={ep.stock} onChange={(e) => setEditProduct({ ...ep, stock: Number(e.target.value) })} className={INPUT} />
+                      )}
                     </div>
                   )}
                   <div className="grid grid-cols-2 gap-4">

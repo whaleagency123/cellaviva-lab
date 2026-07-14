@@ -18,6 +18,8 @@ model Product {
   featured    Boolean     @default(false)
   active      Boolean     @default(true)
   comingSoon  Boolean     @default(false)
+  isBundle         Boolean  @default(false)
+  bundleProductIds String[] @default([])
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
   orderItems    OrderItem[]

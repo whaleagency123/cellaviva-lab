@@ -171,6 +171,11 @@ export default function ProductPage() {
   const product = dbProduct ?? ALL_PRODUCTS.find((p) => p.slug === slug)
   const details  = PRODUCT_DETAILS[slug] ?? PRODUCT_DETAILS['stemuvita']
   const related  = dbRelated.length > 0 ? dbRelated : ALL_PRODUCTS.filter((p) => p.slug !== slug)
+  const relatedProducts = related.filter((p) => !p.isBundle)
+  const bundleOffers    = dbRelated.filter((p) => p.isBundle && p.slug !== slug)
+  const includedProducts = product?.isBundle
+    ? dbRelated.filter((p) => product.bundleProductIds?.includes(p.id))
+    : []
 
   const [activeImage, setActiveImage] = useState(0)
   const [qty, setQty] = useState(1)
@@ -712,13 +717,33 @@ export default function ProductPage() {
         </div>
       </div>
 
+      {/* What's included (bundle's own page) */}
+      {product?.isBundle && includedProducts.length > 0 && (
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-4">
+          <div className="bg-[#f0faf4] border border-[#d8f3dc] rounded-3xl p-6">
+            <h3 className="font-black text-gray-900 mb-4">This bundle includes</h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {includedProducts.map((inc) => (
+                <Link key={inc.id} href={`/products/${inc.slug}`} className="flex items-center gap-3 bg-white rounded-2xl p-4 hover:shadow-sm transition-shadow">
+                  <div className="w-12 h-12 bg-[#d8f3dc] rounded-xl flex items-center justify-center text-2xl flex-shrink-0">🌿</div>
+                  <div>
+                    <p className="font-semibold text-gray-900 text-sm">{inc.title}</p>
+                    <p className="text-xs text-gray-400">{formatPrice(inc.salePrice ?? inc.price)} individually</p>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Related products */}
-      {related.length > 0 && (
+      {(relatedProducts.length > 0 || bundleOffers.length > 0) && (
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
           <h2 className="text-2xl font-black text-gray-900 mb-2">Complete Your Routine</h2>
           <p className="text-gray-500 text-sm mb-8">Customers who use both products see 2× faster results.</p>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {related.map((rel) => {
+            {relatedProducts.map((rel) => {
               const relDiscount = rel.salePrice
                 ? Math.round(((rel.price - rel.salePrice) / rel.price) * 100)
                 : 0
@@ -743,28 +768,35 @@ export default function ProductPage() {
               )
             })}
 
-            {/* Bundle card */}
-            <div className="bg-[#1b4332] rounded-3xl p-6 text-white">
-              <div className="text-4xl mb-4">🌿💧</div>
-              <p className="text-[#52b788] text-xs font-bold uppercase tracking-widest mb-1">Best Value</p>
-              <p className="font-black text-lg mb-2">Complete Routine Bundle</p>
-              <p className="text-white/60 text-xs mb-4">Hair Cleanse + Scalp Serum. Use together for maximum results.</p>
-              <div className="flex items-baseline gap-2 mb-4">
-                <span className="text-2xl font-black">{formatPrice(82)}</span>
-                <span className="text-white/40 line-through text-sm">{formatPrice(180)}</span>
-                <span className="bg-white/20 text-xs font-bold px-2 py-0.5 rounded-full">54% OFF</span>
-              </div>
-              <button
-                onClick={() => {
-                  ALL_PRODUCTS.forEach((p) => addItem(p, 1))
-                  setAdded(true)
-                  setTimeout(() => setAdded(false), 2000)
-                }}
-                className="w-full bg-[#52b788] text-[#0b2819] py-3 rounded-2xl text-sm font-bold hover:bg-[#40a070] transition-colors"
-              >
-                Add Bundle to Cart
-              </button>
-            </div>
+            {/* Real admin-created bundle offers */}
+            {bundleOffers.map((bundle) => {
+              const bundleDiscount = bundle.salePrice
+                ? Math.round(((bundle.price - bundle.salePrice) / bundle.price) * 100)
+                : 0
+              return (
+                <div key={bundle.id} className="bg-[#1b4332] rounded-3xl p-6 text-white">
+                  <div className="text-4xl mb-4">🌿💧</div>
+                  <p className="text-[#52b788] text-xs font-bold uppercase tracking-widest mb-1">Best Value</p>
+                  <p className="font-black text-lg mb-2">{bundle.title}</p>
+                  <p className="text-white/60 text-xs mb-4 line-clamp-2">{bundle.description}</p>
+                  <div className="flex items-baseline gap-2 mb-4">
+                    <span className="text-2xl font-black">{formatPrice(bundle.salePrice ?? bundle.price)}</span>
+                    {bundle.salePrice && <span className="text-white/40 line-through text-sm">{formatPrice(bundle.price)}</span>}
+                    {bundleDiscount > 0 && <span className="bg-white/20 text-xs font-bold px-2 py-0.5 rounded-full">{bundleDiscount}% OFF</span>}
+                  </div>
+                  <button
+                    onClick={() => {
+                      addItem(bundle, 1)
+                      setAdded(true)
+                      setTimeout(() => setAdded(false), 2000)
+                    }}
+                    className="w-full bg-[#52b788] text-[#0b2819] py-3 rounded-2xl text-sm font-bold hover:bg-[#40a070] transition-colors"
+                  >
+                    Add Bundle to Cart
+                  </button>
+                </div>
+              )
+            })}
           </div>
         </div>
       )}
