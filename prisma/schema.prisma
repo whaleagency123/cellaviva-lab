@@ -127,9 +127,30 @@ model Customer {
 
   subscriptions Subscription[]
   wishlistItems CustomerWishlist[]
+  addresses     CustomerAddress[]
 
   @@index([email])
   @@map("customers")
+}
+
+// ── Saved shipping addresses ─────────────────────────────────────────────────
+model CustomerAddress {
+  id         String   @id @default(cuid())
+  customerId String
+  customer   Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  label      String   @default("Home")
+  name       String
+  line1      String
+  line2      String?
+  city       String
+  postcode   String
+  country    String
+  isDefault  Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([customerId])
+  @@map("customer_addresses")
 }
 
 // ── Subscriptions (Stripe recurring orders) ──────────────────────────────────

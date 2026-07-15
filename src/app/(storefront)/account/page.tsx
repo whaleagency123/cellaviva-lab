@@ -53,29 +53,15 @@ const MOCK_SUBSCRIPTIONS: Subscription[] = [
   },
 ]
 
-const MOCK_ADDRESSES: Address[] = [
-  {
-    id: 'addr_001',
-    label: 'Home',
-    name: 'Sarah Miller',
-    line1: '42 Kensington Gardens',
-    city: 'London',
-    postcode: 'W2 4BH',
-    country: 'United Kingdom',
-    isDefault: true,
-  },
-  {
-    id: 'addr_002',
-    label: 'Work',
-    name: 'Sarah Miller',
-    line1: '1 Canada Square',
-    line2: 'Canary Wharf',
-    city: 'London',
-    postcode: 'E14 5AB',
-    country: 'United Kingdom',
-    isDefault: false,
-  },
-]
+const EMPTY_ADDRESS_FORM = {
+  label: 'Home',
+  name: '',
+  line1: '',
+  line2: '',
+  city: '',
+  postcode: '',
+  country: '',
+}
 
 const STATUS_BADGE: Record<string, string> = {
   PENDING:    'bg-yellow-100 text-yellow-700',
@@ -127,7 +113,68 @@ export default function AccountPage() {
 
   const [tab, setTab] = useState<Tab>('overview')
   const [subscriptions, setSubscriptions] = useState(MOCK_SUBSCRIPTIONS)
-  const [addresses, setAddresses] = useState(MOCK_ADDRESSES)
+
+  // Real addresses from DB — new accounts start empty until the customer adds one.
+  const [addresses, setAddresses] = useState<Address[]>([])
+  const [addressesLoading, setAddressesLoading] = useState(true)
+  const [addressModal, setAddressModal] = useState<{ mode: 'add' | 'edit'; id?: string } | null>(null)
+  const [addressForm, setAddressForm] = useState(EMPTY_ADDRESS_FORM)
+  const [addressSaving, setAddressSaving] = useState(false)
+  const [addressError, setAddressError] = useState('')
+
+  function fetchAddresses() {
+    setAddressesLoading(true)
+    fetch('/api/addresses')
+      .then(r => r.json())
+      .then((data: Address[]) => setAddresses(Array.isArray(data) ? data : []))
+      .catch(() => {})
+      .finally(() => setAddressesLoading(false))
+  }
+  useEffect(() => {
+    if (!email) return
+    fetchAddresses()
+  }, [email])
+
+  function openAddAddress() {
+    setAddressForm(EMPTY_ADDRESS_FORM)
+    setAddressError('')
+    setAddressModal({ mode: 'add' })
+  }
+  function openEditAddress(a: Address) {
+    setAddressForm({ label: a.label, name: a.name, line1: a.line1, line2: a.line2 ?? '', city: a.city, postcode: a.postcode, country: a.country })
+    setAddressError('')
+    setAddressModal({ mode: 'edit', id: a.id })
+  }
+  async function saveAddress() {
+    if (!addressForm.name || !addressForm.line1 || !addressForm.city || !addressForm.postcode || !addressForm.country) {
+      setAddressError('Please fill in all required fields.')
+      return
+    }
+    setAddressSaving(true)
+    setAddressError('')
+    try {
+      const res = await fetch(
+        addressModal?.mode === 'edit' ? `/api/addresses/${addressModal.id}` : '/api/addresses',
+        {
+          method: addressModal?.mode === 'edit' ? 'PATCH' : 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(addressForm),
+        }
+      )
+      if (!res.ok) throw new Error((await res.json()).error ?? 'Failed to save address')
+      setAddressModal(null)
+      fetchAddresses()
+    } catch (err) {
+      setAddressError(err instanceof Error ? err.message : 'Something went wrong')
+    } finally {
+      setAddressSaving(false)
+    }
+  }
+  async function deleteAddress(id: string) {
+    setAddresses((prev) => prev.filter((a) => a.id !== id))
+    await fetch(`/api/addresses/${id}`, { method: 'DELETE' }).catch(() => {})
+    fetchAddresses()
+  }
 
   // Real orders from DB — new accounts start empty until they place an order.
   const [orders, setOrders] = useState<Order[]>([])
@@ -188,8 +235,13 @@ export default function AccountPage() {
     ))
   }
 
-  function setDefaultAddress(id: string) {
+  async function setDefaultAddress(id: string) {
     setAddresses((prev) => prev.map((a) => ({ ...a, isDefault: a.id === id })))
+    await fetch(`/api/addresses/${id}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ setDefault: true }),
+    }).catch(() => {})
   }
 
   function saveProfile() {
@@ -546,44 +598,58 @@ export default function AccountPage() {
             {tab === 'addresses' && (
               <div className="space-y-4">
                 <div className="flex justify-end">
-                  <button className="flex items-center gap-2 bg-[#1b4332] text-white px-4 py-2.5 rounded-xl text-sm font-semibold hover:bg-[#2d6a4f] transition-colors">
+                  <button onClick={openAddAddress} className="flex items-center gap-2 bg-[#1b4332] text-white px-4 py-2.5 rounded-xl text-sm font-semibold hover:bg-[#2d6a4f] transition-colors">
                     <Plus className="w-4 h-4" /> Add Address
                   </button>
                 </div>
-                {addresses.map((a) => (
-                  <div key={a.id} className={`bg-white rounded-3xl border shadow-sm p-6 ${a.isDefault ? 'border-[#52b788]' : 'border-gray-100'}`}>
-                    <div className="flex items-start justify-between mb-3">
-                      <div className="flex items-center gap-2">
-                        <span className="text-sm font-bold text-gray-900">{a.label}</span>
-                        {a.isDefault && (
-                          <span className="text-xs bg-[#d8f3dc] text-[#1b4332] font-bold px-2 py-0.5 rounded-full">Default</span>
-                        )}
-                      </div>
-                      <div className="flex gap-2">
-                        <button className="p-1.5 rounded-lg text-gray-400 hover:text-[#2d6a4f] hover:bg-[#d8f3dc] transition-colors">
-                          <Edit2 className="w-4 h-4" />
-                        </button>
-                        {!a.isDefault && (
-                          <button onClick={() => setAddresses((prev) => prev.filter((x) => x.id !== a.id))} className="p-1.5 rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors">
+
+                {addressesLoading ? (
+                  <div className="flex items-center justify-center py-16">
+                    <Loader2 className="w-6 h-6 animate-spin text-[#52b788]" />
+                  </div>
+                ) : addresses.length === 0 ? (
+                  <div className="bg-white rounded-3xl border border-gray-100 p-12 text-center">
+                    <p className="text-4xl mb-4">📍</p>
+                    <p className="font-bold text-gray-900 mb-1">No saved addresses yet</p>
+                    <p className="text-gray-400 text-sm mb-5">Add your real shipping address to check out faster next time.</p>
+                    <button onClick={openAddAddress} className="inline-block bg-[var(--sf-primary)] text-white px-6 py-2.5 rounded-full text-sm font-semibold hover:bg-[var(--sf-primary-dark)] transition-colors">
+                      Add Your First Address
+                    </button>
+                  </div>
+                ) : (
+                  addresses.map((a) => (
+                    <div key={a.id} className={`bg-white rounded-3xl border shadow-sm p-6 ${a.isDefault ? 'border-[#52b788]' : 'border-gray-100'}`}>
+                      <div className="flex items-start justify-between mb-3">
+                        <div className="flex items-center gap-2">
+                          <span className="text-sm font-bold text-gray-900">{a.label}</span>
+                          {a.isDefault && (
+                            <span className="text-xs bg-[#d8f3dc] text-[#1b4332] font-bold px-2 py-0.5 rounded-full">Default</span>
+                          )}
+                        </div>
+                        <div className="flex gap-2">
+                          <button onClick={() => openEditAddress(a)} className="p-1.5 rounded-lg text-gray-400 hover:text-[#2d6a4f] hover:bg-[#d8f3dc] transition-colors">
+                            <Edit2 className="w-4 h-4" />
+                          </button>
+                          <button onClick={() => deleteAddress(a.id)} className="p-1.5 rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors">
                             <Trash2 className="w-4 h-4" />
                           </button>
-                        )}
+                        </div>
                       </div>
+                      <div className="text-sm text-gray-600 space-y-0.5">
+                        <p className="font-medium text-gray-900">{a.name}</p>
+                        <p>{a.line1}</p>
+                        {a.line2 && <p>{a.line2}</p>}
+                        <p>{a.city}, {a.postcode}</p>
+                        <p>{a.country}</p>
+                      </div>
+                      {!a.isDefault && (
+                        <button onClick={() => setDefaultAddress(a.id)} className="mt-3 text-xs text-[#2d6a4f] font-semibold hover:underline">
+                          Set as default
+                        </button>
+                      )}
                     </div>
-                    <div className="text-sm text-gray-600 space-y-0.5">
-                      <p className="font-medium text-gray-900">{a.name}</p>
-                      <p>{a.line1}</p>
-                      {a.line2 && <p>{a.line2}</p>}
-                      <p>{a.city}, {a.postcode}</p>
-                      <p>{a.country}</p>
-                    </div>
-                    {!a.isDefault && (
-                      <button onClick={() => setDefaultAddress(a.id)} className="mt-3 text-xs text-[#2d6a4f] font-semibold hover:underline">
-                        Set as default
-                      </button>
-                    )}
-                  </div>
-                ))}
+                  ))
+                )}
               </div>
             )}
 
@@ -738,6 +804,94 @@ export default function AccountPage() {
               </button>
               <button onClick={saveProfile} className="flex-1 bg-[#1b4332] text-white rounded-xl py-2.5 text-sm font-semibold hover:bg-[#2d6a4f] transition-colors">
                 Save Changes
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Add/Edit address modal */}
+      {addressModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/40" onClick={() => setAddressModal(null)} />
+          <div className="relative bg-white rounded-3xl shadow-2xl w-full max-w-md p-7 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="font-bold text-gray-900 text-lg">{addressModal.mode === 'edit' ? 'Edit Address' : 'Add Address'}</h3>
+              <button onClick={() => setAddressModal(null)} className="p-2 rounded-lg hover:bg-gray-100 text-gray-400"><X className="w-5 h-5" /></button>
+            </div>
+            {addressError && (
+              <div className="mb-4 px-4 py-3 bg-red-50 border border-red-100 rounded-xl text-sm text-red-600">
+                {addressError}
+              </div>
+            )}
+            <div className="space-y-4">
+              <div>
+                <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Label</label>
+                <input
+                  value={addressForm.label}
+                  onChange={(e) => setAddressForm({ ...addressForm, label: e.target.value })}
+                  placeholder="Home, Work…"
+                  className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#52b788]"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Full Name *</label>
+                <input
+                  value={addressForm.name}
+                  onChange={(e) => setAddressForm({ ...addressForm, name: e.target.value })}
+                  className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#52b788]"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Address Line 1 *</label>
+                <input
+                  value={addressForm.line1}
+                  onChange={(e) => setAddressForm({ ...addressForm, line1: e.target.value })}
+                  className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#52b788]"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Address Line 2</label>
+                <input
+                  value={addressForm.line2}
+                  onChange={(e) => setAddressForm({ ...addressForm, line2: e.target.value })}
+                  placeholder="Apartment, suite, etc. (optional)"
+                  className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#52b788]"
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">City *</label>
+                  <input
+                    value={addressForm.city}
+                    onChange={(e) => setAddressForm({ ...addressForm, city: e.target.value })}
+                    className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#52b788]"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Postcode *</label>
+                  <input
+                    value={addressForm.postcode}
+                    onChange={(e) => setAddressForm({ ...addressForm, postcode: e.target.value })}
+                    className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#52b788]"
+                  />
+                </div>
+              </div>
+              <div>
+                <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Country *</label>
+                <input
+                  value={addressForm.country}
+                  onChange={(e) => setAddressForm({ ...addressForm, country: e.target.value })}
+                  className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#52b788]"
+                />
+              </div>
+            </div>
+            <div className="flex gap-3 mt-6">
+              <button onClick={() => setAddressModal(null)} className="flex-1 border border-gray-200 rounded-xl py-2.5 text-sm font-semibold text-gray-600 hover:bg-gray-50 transition-colors">
+                Cancel
+              </button>
+              <button onClick={saveAddress} disabled={addressSaving} className="flex-1 bg-[#1b4332] text-white rounded-xl py-2.5 text-sm font-semibold hover:bg-[#2d6a4f] transition-colors disabled:opacity-50">
+                {addressSaving ? 'Saving…' : 'Save Address'}
               </button>
             </div>
           </div>
